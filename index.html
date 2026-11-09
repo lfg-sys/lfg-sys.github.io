@@ -6,7 +6,7 @@
 <title>LFG – Looking For Game</title>
 <meta name="description" content="LFG is a swipe deck of games. Watch real gameplay, skip what isn't for you, save what is, and see where each game is cheapest.">
 <meta property="og:title" content="LFG – Looking For Game">
-<meta property="og:description" content="Find your next game by watching it played.">
+<meta property="og:description" content="Find your next game through gameplay.">
 <meta property="og:image" content="https://lfg-sys.github.io/assets/icon.png">
 <meta name="theme-color" content="#0B0C10">
 <link rel="icon" href="assets/favicon.png">
@@ -56,37 +56,28 @@
   .note { font-size: 14px; color: var(--muted); margin-top: 16px; }
 
   /* Phone with a swiping deck */
-  .phone { position: relative; width: min(320px, 78vw); aspect-ratio: 9 / 18.5; margin: 0 auto; border-radius: 44px; background: #050608; border: 1px solid #2b2f3a;
-           box-shadow: 0 40px 80px rgba(0,0,0,.55), inset 0 0 0 8px #0d0f14; padding: 18px; }
-  .phone::before { content: ""; position: absolute; top: 14px; left: 50%; width: 90px; height: 22px; margin-left: -45px; border-radius: 12px; background: #050608; z-index: 3; }
-  .screen { position: relative; width: 100%; height: 100%; border-radius: 30px; overflow: hidden; background: var(--bg); }
-  .card { position: absolute; inset: 14px 12px 76px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; display: flex; flex-direction: column; }
-  .card .video { position: relative; flex: 0 0 46%; background: linear-gradient(135deg, var(--g1), var(--g2)); }
-  .card .video::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 22px); }
-  .card .play { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: rgba(11,12,16,.55); display: grid; place-items: center; z-index: 1; }
-  .card .play::before { content: ""; border-left: 14px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; margin-left: 4px; }
-  .card .bar { position: absolute; left: 12px; right: 12px; bottom: 10px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.25); z-index: 1; overflow: hidden; }
-  .card .bar::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; background: #fff; animation: progress 6s linear infinite; }
-  .card .tag { position: absolute; left: 12px; top: 12px; z-index: 1; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: var(--accent-ink); background: var(--accent); border-radius: 6px; padding: 2px 7px; }
-  .card .body { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 7px; }
-  .card .t { font-family: var(--display); color: var(--text); font-size: 19px; font-weight: 700; line-height: 1.15; }
-  .card .s { font-size: 12px; color: var(--muted); }
-  .card .h { font-size: 13px; color: var(--soft); line-height: 1.45; }
-  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .chips span { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; color: var(--soft); }
-  .price { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 9px; }
-  .price b { color: var(--accent); font-size: 15px; font-family: var(--display); }
-  .actions { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 22px; z-index: 2; }
-  .actions span { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); border: 1px solid var(--line); font-size: 20px; }
-  .actions .skip { color: var(--skip); } .actions .save { color: var(--accent); }
-  .c1 { --g1: #3b1d5c; --g2: #0f6b6b; z-index: 2; animation: swipe 6s ease-in-out infinite; }
-  .c2 { --g1: #5a2a12; --g2: #1d3b6b; z-index: 1; transform: scale(.95) translateY(10px); animation: rise 6s ease-in-out infinite; }
-  .c3 { --g1: #12402a; --g2: #4a1d4f; z-index: 0; transform: scale(.9) translateY(20px); opacity: .6; }
-  @keyframes swipe { 0%, 55% { transform: none; opacity: 1; } 75% { transform: translateX(120%) rotate(14deg); opacity: 0; } 76% { transform: scale(.9) translateY(20px); opacity: 0; } 100% { transform: none; opacity: 1; } }
-  @keyframes rise { 0%, 55% { transform: scale(.95) translateY(10px); } 75%, 100% { transform: none; } }
-  @keyframes progress { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
-  .saved { position: absolute; right: 18px; top: 40px; z-index: 4; font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--accent-ink); background: var(--accent); border-radius: 8px; padding: 4px 10px; opacity: 0; animation: saved 6s ease-in-out infinite; }
-  @keyframes saved { 0%, 55% { opacity: 0; transform: translateY(6px); } 62%, 72% { opacity: 1; transform: none; } 80%, 100% { opacity: 0; } }
+  .phone { position: relative; width: min(300px, 74vw); aspect-ratio: 9 / 17; margin: 0 auto; border-radius: 44px; background: #050608; border: 1px solid #2b2f3a;
+           box-shadow: 0 40px 80px rgba(0,0,0,.55), inset 0 0 0 8px #0d0f14; padding: 14px; z-index: 1; }
+  .phone::before { content: ""; position: absolute; top: 20px; left: 50%; width: 76px; height: 20px; margin-left: -38px; border-radius: 12px; background: #050608; z-index: 9; }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 32px; overflow: hidden; background: var(--bg); }
+  /* Four real screens, dealt one after another: each slides in behind, takes the top, then is swiped away (right = saved, left = skipped). */
+  .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; animation: 16s ease-in-out infinite; }
+  .screen img:nth-child(1) { animation-name: dealR; animation-delay: -1s; }
+  .screen img:nth-child(2) { animation-name: dealL; animation-delay: 3s; }
+  .screen img:nth-child(3) { animation-name: dealR; animation-delay: 7s; }
+  .screen img:nth-child(4) { animation-name: dealL; animation-delay: 11s; }
+  @keyframes dealR { 0% { opacity: 0; transform: scale(.94); z-index: 1; } 6%, 25% { opacity: 1; transform: scale(.97); z-index: 1; } 26% { transform: none; z-index: 2; }
+                     44% { opacity: 1; transform: none; z-index: 2; } 53% { opacity: 0; transform: translateX(115%) rotate(12deg); z-index: 2; } 54%, 100% { opacity: 0; transform: scale(.94); z-index: 0; } }
+  @keyframes dealL { 0% { opacity: 0; transform: scale(.94); z-index: 1; } 6%, 25% { opacity: 1; transform: scale(.97); z-index: 1; } 26% { transform: none; z-index: 2; }
+                     44% { opacity: 1; transform: none; z-index: 2; } 53% { opacity: 0; transform: translateX(-115%) rotate(-12deg); z-index: 2; } 54%, 100% { opacity: 0; transform: scale(.94); z-index: 0; } }
+
+  /* Hollow card outlines gliding across behind the hero, each one way only. */
+  .drift { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .drift i { position: absolute; left: 0; width: var(--w); aspect-ratio: 5 / 7; border: 1.5px solid rgba(184,243,90,var(--a)); border-radius: 14px; top: var(--y);
+             animation: var(--dir) var(--t) linear infinite; animation-delay: var(--d); opacity: 0; }
+  @keyframes toRight { 0% { transform: translateX(-20vw) rotate(var(--r)); opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translateX(110vw) rotate(calc(var(--r) * -1)); opacity: 0; } }
+  @keyframes toLeft { 0% { transform: translateX(110vw) rotate(var(--r)); opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translateX(-20vw) rotate(calc(var(--r) * -1)); opacity: 0; } }
+  .hero .wrap { position: relative; z-index: 1; }
 
   /* Sections */
   section { padding: 88px 0; }
@@ -155,10 +146,11 @@
 
 <main>
   <div class="hero">
+    <div class="drift" aria-hidden="true"><i style="--r:-6deg;--dir:toRight;--w:140px;--a:.18;--y:12%;--t:26s;--d:0s"></i><i style="--r:8deg;--dir:toLeft;--w:96px;--a:.12;--y:62%;--t:34s;--d:-8s"></i><i style="--r:-10deg;--dir:toRight;--w:72px;--a:.10;--y:78%;--t:30s;--d:-17s"></i><i style="--r:5deg;--dir:toLeft;--w:120px;--a:.14;--y:22%;--t:38s;--d:-24s"></i><i style="--r:12deg;--dir:toRight;--w:84px;--a:.09;--y:46%;--t:42s;--d:-5s"></i><i style="--r:-4deg;--dir:toLeft;--w:60px;--a:.10;--y:6%;--t:28s;--d:-13s"></i><i style="--r:7deg;--dir:toRight;--w:110px;--a:.12;--y:58%;--t:36s;--d:-29s"></i></div>
     <div class="wrap">
       <div>
         <span class="status"><i></i>In testing on Android · iPhone to follow</span>
-        <h1>Find your next game by <em>watching it played.</em></h1>
+        <h1>Find your next game through <em>gameplay</em></h1>
         <p class="lead">LFG is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
         <div class="ctas">
           <a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a>
@@ -169,20 +161,10 @@
       <div aria-hidden="true">
         <div class="phone">
           <div class="screen">
-            <span class="saved">Saved ♥</span>
-            <div class="card c3"><div class="video"></div><div class="body"><span class="t">&nbsp;</span></div></div>
-            <div class="card c2"><div class="video"><span class="play"></span></div><div class="body"><span class="t">Co-op survival</span><span class="s">2025 · PC · PlayStation · Xbox</span></div></div>
-            <div class="card c1">
-              <div class="video"><span class="tag">GAMEPLAY</span><span class="play"></span><span class="bar"></span></div>
-              <div class="body">
-                <span class="t">Your next favourite game</span>
-                <span class="s">2026 · Indie studio</span>
-                <span class="h">A one-line hook that tells you what you actually do in the game.</span>
-                <div class="chips"><span>PC</span><span>PS5</span><span>Switch</span><span>Roguelike</span><span>~12 h</span></div>
-                <div class="price"><span>Best price today</span><b>£14.99</b></div>
-              </div>
-            </div>
-            <div class="actions"><span class="skip">✕</span><span class="save">♥</span></div>
+            <img src="assets/app/discover-1.jpg" alt="" width="540" height="960">
+            <img src="assets/app/game-page.jpg" alt="" width="540" height="960" loading="lazy">
+            <img src="assets/app/discover-2.jpg" alt="" width="540" height="960" loading="lazy">
+            <img src="assets/app/wishlist.jpg" alt="" width="540" height="960" loading="lazy">
           </div>
         </div>
       </div>
@@ -252,7 +234,7 @@
     <div class="foot">
       <div>
         <a class="brand" href="./"><img src="assets/icon-180.png" alt=""><b>LFG</b><span>Looking For Game</span></a>
-        <p style="margin:12px 0 0;max-width:30em">Find your next game by watching it played.</p>
+        <p style="margin:12px 0 0;max-width:30em">Find your next game through gameplay.</p>
       </div>
       <div><h4>LFG</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#developers">For developers</a></li><li><a href="mailto:lfg@lfgame.co.uk">lfg@lfgame.co.uk</a></li></ul></div>
       <div><h4>Legal</h4><ul><li><a href="privacy/">Privacy notice</a></li><li><a href="terms/">Terms of use</a></li><li><a href="delete-data/">Delete your data</a></li></ul></div>
