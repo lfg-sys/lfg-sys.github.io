@@ -4,21 +4,270 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LFG – Looking For Game</title>
-<meta name="description" content="LFG: find your next game by swiping through real gameplay.">
+<meta name="description" content="LFG is a swipe deck of games. Watch real gameplay, skip what isn't for you, save what is, and see where each game is cheapest.">
+<meta property="og:title" content="LFG – Looking For Game">
+<meta property="og:description" content="Find your next game by watching it played.">
+<meta property="og:image" content="https://lfg-sys.github.io/assets/icon.png">
+<meta name="theme-color" content="#0B0C10">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
 <style>
-  body { margin:0; background:#0B0C10; color:#C9CDD6; font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-  main { max-width:720px; margin:0 auto; padding:64px 16px; }
-  .logo { color:#B8F35A; font-weight:800; font-size:56px; letter-spacing:-1px; margin:0; }
-  h1 { color:#F2F3F5; font-size:26px; margin:4px 0 16px; }
-  a { color:#B8F35A; }
+  /* LFG's own colours: near-black ground, lime accent (the app's default scheme). */
+  :root { color-scheme: dark; --bg:#0B0C10; --surface:#16181F; --surface2:#1F222B; --line:#2A2E39; --text:#F2F3F5; --soft:#C9CDD6; --muted:#8B909C;
+          --accent:#B8F35A; --accent-ink:#0B0C10; --skip:#FF6B6B; --display:"Space Grotesk", Inter, system-ui, sans-serif; --body: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--soft); font: 16px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+  h1, h2, h3 { font-family: var(--display); color: var(--text); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+  /* Header */
+  header { position: sticky; top: 0; z-index: 10; background: rgba(11,12,16,.82); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid rgba(255,255,255,.06); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .brand b { font-family: var(--display); font-size: 20px; letter-spacing: -0.02em; }
+  .brand span { color: var(--muted); font-size: 14px; }
+  .links { display: flex; align-items: center; gap: 22px; font-size: 14.5px; }
+  .links a { color: var(--soft); text-decoration: none; }
+  .links a:hover { color: var(--text); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; font-weight: 600; font-size: 15px; text-decoration: none; transition: transform .15s ease, background .15s ease; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn.ghost { border: 1px solid var(--line); color: var(--text); }
+  .btn:focus-visible, .links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .links .btn { min-height: 38px; padding: 0 16px; font-size: 14px; color: var(--accent-ink); }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; padding: 72px 0 88px; }
+  .hero::before { content: ""; position: absolute; inset: -20% -10% auto 40%; height: 720px; background: radial-gradient(closest-side, rgba(184,243,90,.16), transparent); pointer-events: none; }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: 48px; }
+  .status { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; color: var(--soft); background: var(--surface); }
+  .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(184,243,90,.18); }
+  .hero h1 { font-size: clamp(40px, 6vw, 68px); line-height: 1.02; margin: 20px 0 18px; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p.lead { font-size: 19px; line-height: 1.55; color: var(--soft); max-width: 34em; margin: 0 0 30px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .note { font-size: 14px; color: var(--muted); margin-top: 16px; }
+
+  /* Phone with a swiping deck */
+  .phone { position: relative; width: min(320px, 78vw); aspect-ratio: 9 / 18.5; margin: 0 auto; border-radius: 44px; background: #050608; border: 1px solid #2b2f3a;
+           box-shadow: 0 40px 80px rgba(0,0,0,.55), inset 0 0 0 8px #0d0f14; padding: 18px; }
+  .phone::before { content: ""; position: absolute; top: 14px; left: 50%; width: 90px; height: 22px; margin-left: -45px; border-radius: 12px; background: #050608; z-index: 3; }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 30px; overflow: hidden; background: var(--bg); }
+  .card { position: absolute; inset: 14px 12px 76px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; display: flex; flex-direction: column; }
+  .card .video { position: relative; flex: 0 0 46%; background: linear-gradient(135deg, var(--g1), var(--g2)); }
+  .card .video::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 22px); }
+  .card .play { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: rgba(11,12,16,.55); display: grid; place-items: center; z-index: 1; }
+  .card .play::before { content: ""; border-left: 14px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; margin-left: 4px; }
+  .card .bar { position: absolute; left: 12px; right: 12px; bottom: 10px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.25); z-index: 1; overflow: hidden; }
+  .card .bar::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; background: #fff; animation: progress 6s linear infinite; }
+  .card .tag { position: absolute; left: 12px; top: 12px; z-index: 1; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: var(--accent-ink); background: var(--accent); border-radius: 6px; padding: 2px 7px; }
+  .card .body { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 7px; }
+  .card .t { font-family: var(--display); color: var(--text); font-size: 19px; font-weight: 700; line-height: 1.15; }
+  .card .s { font-size: 12px; color: var(--muted); }
+  .card .h { font-size: 13px; color: var(--soft); line-height: 1.45; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chips span { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; color: var(--soft); }
+  .price { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 9px; }
+  .price b { color: var(--accent); font-size: 15px; font-family: var(--display); }
+  .actions { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 22px; z-index: 2; }
+  .actions span { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); border: 1px solid var(--line); font-size: 20px; }
+  .actions .skip { color: var(--skip); } .actions .save { color: var(--accent); }
+  .c1 { --g1: #3b1d5c; --g2: #0f6b6b; z-index: 2; animation: swipe 6s ease-in-out infinite; }
+  .c2 { --g1: #5a2a12; --g2: #1d3b6b; z-index: 1; transform: scale(.95) translateY(10px); animation: rise 6s ease-in-out infinite; }
+  .c3 { --g1: #12402a; --g2: #4a1d4f; z-index: 0; transform: scale(.9) translateY(20px); opacity: .6; }
+  @keyframes swipe { 0%, 55% { transform: none; opacity: 1; } 75% { transform: translateX(120%) rotate(14deg); opacity: 0; } 76% { transform: scale(.9) translateY(20px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+  @keyframes rise { 0%, 55% { transform: scale(.95) translateY(10px); } 75%, 100% { transform: none; } }
+  @keyframes progress { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
+  .saved { position: absolute; right: 18px; top: 40px; z-index: 4; font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--accent-ink); background: var(--accent); border-radius: 8px; padding: 4px 10px; opacity: 0; animation: saved 6s ease-in-out infinite; }
+  @keyframes saved { 0%, 55% { opacity: 0; transform: translateY(6px); } 62%, 72% { opacity: 1; transform: none; } 80%, 100% { opacity: 0; } }
+
+  /* Sections */
+  section { padding: 88px 0; }
+  .sec-head { max-width: 640px; margin-bottom: 44px; display: flex; flex-direction: column; gap: 12px; }
+  .sec-head h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.08; }
+  .sec-head p { margin: 0; font-size: 17.5px; color: var(--soft); }
+  .alt { background: linear-gradient(180deg, #0E1015, #0B0C10); border-top: 1px solid rgba(255,255,255,.05); border-bottom: 1px solid rgba(255,255,255,.05); }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; counter-reset: step; }
+  .step { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px 26px; }
+  .step::before { counter-increment: step; content: counter(step); font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--accent-ink); background: var(--accent); width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; margin-bottom: 18px; }
+  .step h3 { font-size: 22px; margin-bottom: 8px; }
+  .step p { margin: 0; color: var(--soft); }
+  .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+  .feature { background: var(--bg); padding: 28px 26px; display: flex; flex-direction: column; gap: 10px; }
+  .feature svg { width: 26px; height: 26px; color: var(--accent); }
+  .feature h3 { font-size: 19px; }
+  .feature p { margin: 0; color: var(--soft); font-size: 15px; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 32px 30px; display: flex; flex-direction: column; gap: 14px; }
+  .panel h3 { font-size: 26px; }
+  .panel p { margin: 0; color: var(--soft); }
+  .panel ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .panel li { display: flex; gap: 10px; align-items: flex-start; }
+  .panel li::before { content: ""; flex: none; width: 18px; height: 18px; margin-top: 3px; border-radius: 50%; background: rgba(184,243,90,.16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.5l2.5 2.5L13 6.5' fill='none' stroke='%23B8F35A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat; }
+  .panel .btn { align-self: flex-start; margin-top: 6px; }
+  .cta { text-align: center; padding: 96px 0; }
+  .cta h2 { font-size: clamp(32px, 4.6vw, 52px); line-height: 1.05; margin-bottom: 14px; }
+  .cta p { margin: 0 auto 28px; max-width: 34em; font-size: 18px; }
+  .cta .ctas { justify-content: center; }
+
+  /* Footer */
+  footer { border-top: 1px solid rgba(255,255,255,.06); padding: 44px 0 56px; font-size: 14px; color: var(--muted); }
+  .foot { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .foot h4 { margin: 0 0 10px; color: var(--text); font: 600 14px var(--body); }
+  .foot ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .foot a { color: var(--soft); text-decoration: none; } .foot a:hover { color: var(--text); text-decoration: underline; }
+  .legal { margin-top: 32px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.55; }
+
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; gap: 56px; }
+    .hero { padding: 48px 0 64px; }
+    .steps, .features { grid-template-columns: 1fr; }
+    .split { grid-template-columns: 1fr; }
+    .foot { grid-template-columns: 1fr 1fr; }
+    .foot > div:first-child { grid-column: 1 / -1; }
+    .links a:not(.btn) { display: none; }
+    section { padding: 64px 0; }
+  }
+  @media (min-width: 560px) and (max-width: 900px) { .features { grid-template-columns: 1fr 1fr; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
 </style>
 </head>
 <body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="./" aria-label="LFG – Looking For Game, home"><img src="assets/icon-180.png" alt=""><b>LFG</b><span>Looking For Game</span></a>
+    <nav class="links" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#developers">For developers</a>
+      <a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the test</a>
+    </nav>
+  </div>
+</header>
+
 <main>
-<p class="logo">LFG</p>
-<h1>Looking For Game</h1>
-<p>Find your next game by swiping through real gameplay. LFG is in testing on Android.</p>
-<p><a href="privacy/">Privacy notice</a> · <a href="delete-data/">Delete your data</a> · <a href="terms/">Terms of use</a> · <a href="mailto:lfg@lfgame.co.uk">lfg@lfgame.co.uk</a></p>
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="status"><i></i>In testing on Android · iPhone to follow</span>
+        <h1>Find your next game by <em>watching it played.</em></h1>
+        <p class="lead">LFG is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
+        <div class="ctas">
+          <a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a>
+          <a class="btn ghost" href="#how">See how it works</a>
+        </div>
+        <p class="note">Free to use. No account needed.</p>
+      </div>
+      <div aria-hidden="true">
+        <div class="phone">
+          <div class="screen">
+            <span class="saved">Saved ♥</span>
+            <div class="card c3"><div class="video"></div><div class="body"><span class="t">&nbsp;</span></div></div>
+            <div class="card c2"><div class="video"><span class="play"></span></div><div class="body"><span class="t">Co-op survival</span><span class="s">2025 · PC · PlayStation · Xbox</span></div></div>
+            <div class="card c1">
+              <div class="video"><span class="tag">GAMEPLAY</span><span class="play"></span><span class="bar"></span></div>
+              <div class="body">
+                <span class="t">Your next favourite game</span>
+                <span class="s">2026 · Indie studio</span>
+                <span class="h">A one-line hook that tells you what you actually do in the game.</span>
+                <div class="chips"><span>PC</span><span>PS5</span><span>Switch</span><span>Roguelike</span><span>~12 h</span></div>
+                <div class="price"><span>Best price today</span><b>£14.99</b></div>
+              </div>
+            </div>
+            <div class="actions"><span class="skip">✕</span><span class="save">♥</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="how" class="alt">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">How it works</span><h2>Three seconds to know if a game is for you.</h2><p>Store pages and trailers show a game at its best. LFG shows you what playing it is actually like.</p></div>
+      <div class="steps">
+        <div class="step"><h3>Watch</h3><p>Every card opens with real gameplay, muted and ready to go, so you see the game being played rather than a sales pitch.</p></div>
+        <div class="step"><h3>Swipe</h3><p>Skip it or save it. Each choice shapes the rest of your deck, so the more you swipe, the better it gets.</p></div>
+        <div class="step"><h3>Play</h3><p>Saved games wait on your wishlist with the best price we can find. One tap takes you to the store.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Features</span><h2>Built for people who'd rather play than scroll.</h2></div>
+      <div class="features">
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg><h3>Gameplay first</h3><p>Videos of people actually playing, from channels checked for adverts, with trailers there too.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><h3>Only what you can play</h3><p>Pick your platforms, genres, price and play time. Your deck only shows games that fit.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8 8-8-8V4h8z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg><h3>The best price</h3><p>Prices from the stores you use, in your currency, with sales flagged so you know when to buy.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><h3>A wishlist that follows you</h3><p>Your saved games stay on your phone. Sign in with Google if you'd like them back on a new one.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><h3>Coming soon</h3><p>Upcoming games with their release dates, so the ones you're waiting for don't pass you by.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><h3>Honest by design</h3><p>Paid placements are clearly labelled and rare. Usage data is only shared if you turn it on.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="developers" class="alt">
+    <div class="wrap">
+      <div class="split">
+        <div class="panel">
+          <span class="eyebrow">For game developers</span>
+          <h3>Put your game in front of players who want it.</h3>
+          <p>LFG shows games to players by what they play and what they like. Sponsored cards put your game in those decks, playing your own footage.</p>
+          <ul>
+            <li>Shown only to players whose filters fit your game</li>
+            <li>Clearly labelled as sponsored, at most one in every eight cards</li>
+            <li>Plays your gameplay or trailer straight away</li>
+          </ul>
+          <a class="btn ghost" href="mailto:lfg@lfgame.co.uk?subject=Sponsored%20cards%20on%20LFG">Talk to us</a>
+        </div>
+        <div class="panel">
+          <span class="eyebrow">Your privacy</span>
+          <h3>Your deck, your data.</h3>
+          <p>LFG works without an account. What you save lives on your phone unless you choose to sign in.</p>
+          <ul>
+            <li>No account needed to swipe and save</li>
+            <li>Usage data only if you switch it on</li>
+            <li>Delete your data at any time, in the app or on this site</li>
+          </ul>
+          <a class="btn ghost" href="privacy/">Read the privacy notice</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <h2>Be one of the first to try LFG.</h2>
+      <p>LFG is in closed testing on Android. Email us and we'll add you to the test.</p>
+      <div class="ctas"><a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a></div>
+    </div>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="brand" href="./"><img src="assets/icon-180.png" alt=""><b>LFG</b><span>Looking For Game</span></a>
+        <p style="margin:12px 0 0;max-width:30em">Find your next game by watching it played.</p>
+      </div>
+      <div><h4>LFG</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#developers">For developers</a></li><li><a href="mailto:lfg@lfgame.co.uk">lfg@lfgame.co.uk</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="privacy/">Privacy notice</a></li><li><a href="terms/">Terms of use</a></li><li><a href="delete-data/">Delete your data</a></li></ul></div>
+    </div>
+    <div class="legal">
+      <span>Game information from <a href="https://www.igdb.com" rel="noopener">IGDB.com</a>. Videos play in YouTube's own player and belong to their creators. Game names, artwork and footage belong to their publishers.</span>
+      <span>LFG – Looking For Game is a trading name of Rung App Ltd, a company registered in England and Wales (company number 17278974). © 2026 Rung App Ltd.</span>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
