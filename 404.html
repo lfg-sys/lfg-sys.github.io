@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Looking For Game</title>
+<style>body{margin:0;font:16px/1.5 system-ui,sans-serif;background:#0f1115;color:#e9ecf1;display:grid;place-items:center;min-height:100vh}a{color:#8ab4ff}</style>
+</head>
+<body>
+<p id="t">Page not found. <a href="/">Go to Looking For Game</a>.</p>
+<script>
+if (/^\/r\/[a-z0-9-]+\/?$/i.test(location.pathname)) {
+  document.getElementById('t').innerHTML = 'Opening Looking For Game… <a href="https://play.google.com/store/apps/details?id=uk.co.lfgame.app">Tap here if nothing happens</a>.';
+  var s = document.createElement('script'); s.src = '/r/go.js'; document.body.appendChild(s);
+}
+</script>
+</body>
+</html>
