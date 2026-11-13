@@ -58,7 +58,7 @@
   if (c && UUID.test(c)) {
     call('alerts_email_confirm', c).then(function (r) {
       if (r === 'confirmed') show('QUEST COMPLETE', "You're in. Email alerts are on.", "We'll email you when a game on your wishlist drops in price, hits its lowest price yet, or comes out.");
-      else if (r === 'expired') show('LINK EXPIRED', 'This link is more than 7 days old.', 'Open LFG, go to You, then Alerts, and enter your email again to get a new one.');
+      else if (r === 'expired') show('LINK EXPIRED', 'This link is more than 7 days old.', 'Open LFG, go to You, then Alerts, and press "Send the link again".');
       else show('LINK NOT FOUND', "This link isn't in use any more.", 'The email address may have been changed or removed. Open LFG, go to You, then Alerts, to check.');
     }).catch(problem);
   } else if (u && UUID.test(u)) {
@@ -67,7 +67,7 @@
     b.onclick = function () {
       b.disabled = true;
       call('alerts_email_unsubscribe', u).then(function () {
-        show('DONE', "You're unsubscribed.", 'Your email address has been removed and no more emails will come. You can add it again any time in the app, on the You tab.');
+        show('DONE', "You're unsubscribed.", 'Your email address has been removed and no more emails will come. Changed your mind? Open LFG, go to You, then Alerts, and press "Email me" to turn them back on.');
       }).catch(problem);
     };
     $('actions').appendChild(b);
