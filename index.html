@@ -99,8 +99,23 @@
   .alt { background: linear-gradient(180deg, #0E1015, #0B0C10); border-top: 1px solid rgba(255,255,255,.05); border-bottom: 1px solid rgba(255,255,255,.05); }
   .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; counter-reset: step; }
   .step { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px 26px; }
-  .step::before { counter-increment: step; content: counter(step); font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--accent-ink); background: var(--accent); width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; margin-bottom: 18px; }
-  .step h3 { font-size: 22px; margin-bottom: 8px; }
+  /* Swipe. Watch. Play. in the brand's three colours, glowing like the thumbnail. */
+  .step h3 { font-size: 34px; line-height: 1.1; margin-bottom: 12px; letter-spacing: -0.03em; }
+  .step.swipe h3 { color: #4FE3C1; text-shadow: 0 0 22px rgba(79,227,193,.55), 0 0 4px rgba(79,227,193,.5); }
+  .step.watch h3 { color: #B58CFF; text-shadow: 0 0 22px rgba(181,140,255,.55), 0 0 4px rgba(181,140,255,.5); }
+  .step.play h3 { color: #B8F35A; text-shadow: 0 0 22px rgba(184,243,90,.5), 0 0 4px rgba(184,243,90,.45); }
+
+  /* Join the Android test: the button turns into a small form. */
+  .join-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; width: 100%; max-width: 480px; }
+  .join-form input { flex: 1 1 220px; min-height: 48px; padding: 0 18px; border-radius: 999px; border: 1px solid #6B7280; background: var(--surface2); color: var(--text); font: 16px var(--body); }
+  .join-form input::placeholder { color: var(--muted); }
+  .join-form input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .join-form button { border: 0; cursor: pointer; font-family: var(--body); min-height: 48px; }
+  .join-form button[disabled] { opacity: .6; cursor: default; }
+  .join-note { flex-basis: 100%; margin: 0; font-size: 13.5px; color: var(--muted); }
+  .join-note.err { color: #FF8A7A; }
+  .join-done { margin: 0; padding: 14px 18px; border: 1px solid rgba(184,243,90,.45); border-radius: 16px; background: rgba(184,243,90,.08); color: var(--text); max-width: 480px; }
+  .cta .join-form, .cta .join-done { margin: 0 auto; }
   .step p { margin: 0; color: var(--soft); }
   .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
   .feature { background: var(--bg); padding: 28px 26px; display: flex; flex-direction: column; gap: 10px; }
@@ -151,7 +166,7 @@
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
       <a href="#developers">For developers</a>
-      <a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the test</a>
+      <a class="btn primary" href="#join" data-join-jump>Join the test</a>
     </nav>
   </div>
 </header>
@@ -165,7 +180,7 @@
         <h1>Find your next game through <em>gameplay</em></h1>
         <p class="lead">LFG is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
         <div class="ctas">
-          <a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a>
+          <a class="btn primary" data-join href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a>
           <a class="btn ghost" href="#how">See how it works</a>
         </div>
         <p class="note">Free to use. No account needed.</p>
@@ -187,9 +202,9 @@
     <div class="wrap">
       <div class="sec-head"><span class="eyebrow">How it works</span><h2>Three seconds to know if a game is for you.</h2><p>Store pages and trailers show a game at its best. LFG shows you what playing it is actually like.</p></div>
       <div class="steps">
-        <div class="step"><h3>Watch</h3><p>Every card opens with real gameplay, muted and ready to go, so you see the game being played rather than a sales pitch.</p></div>
-        <div class="step"><h3>Swipe</h3><p>Skip it or save it. Each choice shapes the rest of your deck, so the more you swipe, the better it gets.</p></div>
-        <div class="step"><h3>Play</h3><p>Saved games wait on your wishlist with the best price we can find. One tap takes you to the store.</p></div>
+        <div class="step swipe"><h3>Swipe.</h3><p>Flick through a deck of games. Skip it or save it: each choice shapes the rest of your deck, so the more you swipe, the better it gets.</p></div>
+        <div class="step watch"><h3>Watch.</h3><p>Every card opens with real gameplay, muted and ready to go, so you see the game being played rather than a sales pitch.</p></div>
+        <div class="step play"><h3>Play.</h3><p>Saved games wait on your wishlist with the best price we can find. One tap takes you to the store.</p></div>
       </div>
     </div>
   </section>
@@ -232,11 +247,11 @@
     </div>
   </section>
 
-  <section class="cta">
+  <section class="cta" id="join">
     <div class="wrap">
       <h2>Be one of the first to try LFG.</h2>
-      <p>LFG is in closed testing on Android. Email us and we'll add you to the test.</p>
-      <div class="ctas"><a class="btn primary" href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a></div>
+      <p>LFG is in closed testing on Android. Leave the email address of your Google Play account and we'll add you to the test.</p>
+      <div class="ctas"><a class="btn primary" data-join href="mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test">Join the Android test</a></div>
     </div>
   </section>
 </main>
@@ -258,5 +273,49 @@
   </div>
 </footer>
 
+<script>
+// "Join the Android test": the button turns into an email box. The address goes to LFG (lfg@lfgame.co.uk gets a
+// message) so we can add it to the closed test in Google Play. Without JavaScript the button is a plain email link.
+// At launch this becomes a straight link to Google Play.
+(function () {
+  var API = 'https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/tester_signup';
+  var KEY = 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm';
+  function open(btn) {
+    var form = document.createElement('form'); form.className = 'join-form'; form.noValidate = true;
+    form.innerHTML = '<input type="email" name="email" autocomplete="email" inputmode="email" required placeholder="Your Google Play email" aria-label="The email address of your Google Play account">' +
+      '<button class="btn primary" type="submit">Send</button>' +
+      '<p class="join-note" role="status">We only use it to add you to the Android test and to send you the link.</p>';
+    btn.replaceWith(form);
+    var input = form.querySelector('input'), send = form.querySelector('button'), note = form.querySelector('.join-note');
+    input.focus();
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var email = input.value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { note.className = 'join-note err'; note.textContent = "That doesn't look like an email address."; input.focus(); return; }
+      send.disabled = true; send.textContent = 'Sending…';
+      fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify({ p_email: email }) })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (res) {
+          if (res !== 'ok') throw new Error(res);
+          var done = document.createElement('p'); done.className = 'join-done'; done.setAttribute('role', 'status');
+          done.textContent = "You're on the list. We'll email " + email + ' a link to the test, usually within a day.';
+          form.replaceWith(done);
+        })
+        .catch(function () {
+          send.disabled = false; send.textContent = 'Send';
+          note.className = 'join-note err';
+          note.innerHTML = "That didn't send. Try again, or <a href=\"mailto:lfg@lfgame.co.uk?subject=LFG%20Android%20test&body=Please%20add%20" + encodeURIComponent(email) + "%20to%20the%20Android%20test.\">email us instead</a>.";
+        });
+    });
+  }
+  document.querySelectorAll('[data-join]').forEach(function (b) {
+    b.addEventListener('click', function (ev) { ev.preventDefault(); open(b); });
+  });
+  var jump = document.querySelector('[data-join-jump]');
+  if (jump) jump.addEventListener('click', function () {
+    var b = document.querySelector('#join [data-join]'); if (b) setTimeout(function () { open(b); }, 350);
+  });
+})();
+</script>
 </body>
 </html>
