@@ -57,7 +57,7 @@
   var c = q.get('confirm'), u = q.get('unsubscribe');
   if (c && UUID.test(c)) {
     call('alerts_email_confirm', c).then(function (r) {
-      if (r === 'confirmed') show('QUEST COMPLETE', "You're in. Email alerts are on.", "We'll email you when a game on your wishlist drops in price, hits its lowest price yet, or comes out. One email a day at most.");
+      if (r === 'confirmed') show('QUEST COMPLETE', "You're in. Email alerts are on.", "We'll email you when a game on your wishlist drops in price, hits its lowest price yet, or comes out.");
       else if (r === 'expired') show('LINK EXPIRED', 'This link is more than 7 days old.', 'Open LFG, go to You, then Alerts, and enter your email again to get a new one.');
       else show('LINK NOT FOUND', "This link isn't in use any more.", 'The email address may have been changed or removed. Open LFG, go to You, then Alerts, to check.');
     }).catch(problem);
