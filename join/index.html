@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Join my Co-op swipe · Looking For Game</title>
+<meta name="description" content="We each swipe the same games and see the ones we all want to play.">
+<meta property="og:title" content="Join my Co-op swipe on Looking For Game">
+<meta property="og:description" content="We each swipe the same games and see the ones we all want to play.">
+<meta property="og:image" content="https://lfgame.co.uk/assets/icon.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0C10">
+<link rel="icon" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+  :root { color-scheme: dark; --bg:#0B0C10; --surface:#16181F; --line:#2A2E39; --text:#F2F3F5; --soft:#C9CDD6; --muted:#8B909C; --accent:#B8F35A; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--bg); color: var(--soft); font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { width: 100%; max-width: 480px; }
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; text-decoration: none; color: var(--text); font: 700 22px "Space Grotesk", Inter, sans-serif; letter-spacing: -0.02em; }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-top: 5px solid var(--accent); border-radius: 18px; padding: 30px 28px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .16em; color: var(--accent); margin: 0 0 8px; }
+  h1 { font: 700 28px/1.2 "Space Grotesk", Inter, sans-serif; letter-spacing: -0.02em; color: var(--text); margin: 0 0 12px; text-wrap: balance; }
+  p { margin: 0 0 18px; }
+  button, .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px; border: 0; border-radius: 999px; background: var(--accent); color: #0B0C10; font: 700 16px Inter, sans-serif; text-decoration: none; cursor: pointer; }
+  button:focus-visible, .btn:focus-visible, a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  button[disabled] { opacity: .6; cursor: default; }
+  .quiet { background: transparent; color: var(--soft); border: 1px solid #6B7280; margin-left: 8px; }
+  small { display: block; margin-top: 18px; color: var(--muted); font-size: 13px; }
+  small a { color: var(--muted); }
+  .box { margin: 0 0 18px; padding: 12px 14px; border-radius: 12px; background: #0B0C10; border: 1px solid var(--line); font-size: 14px; color: var(--soft); }
+  .box b { color: var(--text); }
+  .code { font: 700 22px "Space Grotesk", Inter, sans-serif; letter-spacing: .12em; color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><img src="/assets/icon-180.png" alt="">Looking For Game</a>
+  <div class="card">
+    <p class="eyebrow">LOOKING FOR GAME · CO-OP SWIPE</p>
+    <h1 id="title">A friend invited you to find a game to play together</h1>
+    <p>Co-op swipe: you each swipe through games with real gameplay, in your own time. The app shows the games you all want to play.</p>
+    <div class="box" id="group" hidden></div>
+    <a class="btn" id="get" href="https://play.google.com/store/apps/details?id=uk.co.lfgame.app">Join the group</a>
+    <small id="have">Already have the app? Open it, tap Discover at the top, choose Co-op, then <b>Join with a code</b> and enter <span class="code" id="code">your code</span></small>
+    <small>Free on Android. Looking For Game is in testing; iPhone comes later.</small>
+  </div>
+</main>
+<script>
+// The invite code comes in the link (?c=CODE). Google Play passes it to the app after install (coop=CODE), so a new
+// player lands in the group. The group's name and deck are read from the database with the public key.
+(function () {
+  var c = (new URLSearchParams(location.search).get('c') || location.hash.slice(1) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+  if (!c) return;
+  document.getElementById('code').textContent = c;
+  document.getElementById('get').href = 'https://play.google.com/store/apps/details?id=uk.co.lfgame.app&referrer=' + encodeURIComponent('coop=' + c + '&utm_source=coop_invite');
+  fetch('https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/coop_preview', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', apikey: 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm' },
+    body: JSON.stringify({ p_code: c })
+  }).then(function (r) { return r.json(); }).then(function (g) {
+    if (!g || !g.name) return;
+    var box = document.getElementById('group');
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (x) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x]; }); };
+    var deck = g.decks && g.decks[0];
+    box.innerHTML = 'Group: <b>' + esc(g.name) + '</b> · ' + g.joined + ' of 4 joined' + (deck ? '<br>Deck: <b>' + esc(deck.title) + '</b> · ' + deck.cards + ' games' : '');
+    box.hidden = false;
+    if (g.starter) document.getElementById('title').textContent = g.starter + ' invited you to find a game to play together';
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>
