@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Email alerts · LFG – Looking For Game</title>
+<title>Email alerts · Looking For Game</title>
 <meta name="theme-color" content="#0B0C10">
 <link rel="icon" href="/assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,17 +31,17 @@
 </head>
 <body>
 <main>
-  <a class="brand" href="/"><img src="/assets/icon.png" alt="">LFG</a>
+  <a class="brand" href="/"><img src="/assets/icon.png" alt="">Looking For Game</a>
   <div class="card" aria-live="polite">
     <p class="eyebrow" id="eyebrow">EMAIL ALERTS</p>
     <h1 id="title">One moment…</h1>
     <p id="text"></p>
     <div id="actions"></div>
   </div>
-  <small>LFG – Looking For Game is a trading name of Rung App Ltd. <a href="/privacy/">Privacy</a> · <a href="mailto:lfg@lfgame.co.uk">lfg@lfgame.co.uk</a></small>
+  <small>Looking For Game is a trading name of Rung App Ltd. <a href="/privacy/">Privacy</a> · <a href="mailto:lfg@lfgame.co.uk">lfg@lfgame.co.uk</a></small>
 </main>
 <script>
-// The two links in LFG's emails: ?confirm=<code> (switches email alerts on) and ?unsubscribe=<code> (removes the address).
+// The two links in Looking For Game's emails: ?confirm=<code> (switches email alerts on) and ?unsubscribe=<code> (removes the address).
 (function () {
   var API = 'https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/';
   var KEY = 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm';
@@ -58,8 +58,8 @@
   if (c && UUID.test(c)) {
     call('alerts_email_confirm', c).then(function (r) {
       if (r === 'confirmed') show('QUEST COMPLETE', "You're in. Email alerts are on.", "We'll email you when a game on your wishlist drops in price, hits its lowest price yet, or comes out.");
-      else if (r === 'expired') show('LINK EXPIRED', 'This link is more than 7 days old.', 'Open LFG, go to You, then Alerts, and press "Send the link again".');
-      else show('LINK NOT FOUND', "This link isn't in use any more.", 'The email address may have been changed or removed. Open LFG, go to You, then Alerts, to check.');
+      else if (r === 'expired') show('LINK EXPIRED', 'This link is more than 7 days old.', 'Open Looking For Game, go to You, then Alerts, and press "Send the link again".');
+      else show('LINK NOT FOUND', "This link isn't in use any more.", 'The email address may have been changed or removed. Open Looking For Game, go to You, then Alerts, to check.');
     }).catch(problem);
   } else if (u && UUID.test(u)) {
     show('EMAIL ALERTS', 'Stop the emails?', "We'll remove your email address straight away. Alerts on your phone carry on unless you turn them off in the app.");
@@ -67,12 +67,12 @@
     b.onclick = function () {
       b.disabled = true;
       call('alerts_email_unsubscribe', u).then(function () {
-        show('DONE', "You're unsubscribed.", 'Your email address has been removed and no more emails will come. Changed your mind? Open LFG, go to You, then Alerts, and press "Email me" to turn them back on.');
+        show('DONE', "You're unsubscribed.", 'Your email address has been removed and no more emails will come. Changed your mind? Open Looking For Game, go to You, then Alerts, and press "Email me" to turn them back on.');
       }).catch(problem);
     };
     $('actions').appendChild(b);
   } else {
-    show('EMAIL ALERTS', 'Open the link from your email.', 'This page confirms or stops LFG email alerts using the link in the email we sent you.');
+    show('EMAIL ALERTS', 'Open the link from your email.', 'This page confirms or stops Looking For Game email alerts using the link in the email we sent you.');
   }
 })();
 </script>
