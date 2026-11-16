@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "uk.co.lfgame.app",
+      "sha256_cert_fingerprints": ["84:29:40:D4:10:39:CB:B4:55:F3:8D:85:22:D6:99:2F:0E:33:80:D3:46:17:8B:0F:90:7F:38:A3:28:07:89:CC"]
+    }
+  }
+]
