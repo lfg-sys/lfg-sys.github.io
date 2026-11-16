@@ -4,9 +4,11 @@ Run nightly by .github/workflows/game-pages.yml. Pages only change when the game
 with no changes commits nothing. Prices are left off on purpose: they change daily and live in the app.
 Pages for games that leave the catalogue are kept, so a link someone shared keeps working.
 """
-import html, json, os, sys, urllib.request
+import html, json, os, re, sys, urllib.request
 
-CATALOGUE = 'https://vulgyfzelewuceatdloj.supabase.co/storage/v1/object/public/public-data/catalogue-v1.json'
+# Cloudflare's copy first (free to download), Supabase's as the fallback: the same order as the app.
+CATALOGUES = ['https://pub-bb2d21f9f297475aaa9b820aaef8ab9e.r2.dev/catalogue-v1.json',
+              'https://vulgyfzelewuceatdloj.supabase.co/storage/v1/object/public/public-data/catalogue-v1.json']
 SITE = 'https://lfgame.co.uk'
 GET_APP = SITE + '/#join'  # closed test; becomes the Play listing at public launch
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -29,9 +31,9 @@ def label(map_, k):
 def video(g):
     vids = g.get('videos') or []
     v = next((x for x in vids if x.get('tab') == 'gameplay'), vids[0] if vids else None)
-    if not v:
+    if not v or not re.fullmatch(r'[A-Za-z0-9_-]{11}', str(v.get('id') or '')):
         return ''
-    vid = e(v['id'])
+    vid = v['id']
     start = f"&start={int(v['startS'])}" if v.get('startS') else ''
     # A thumbnail first: YouTube only loads (and sets nothing) once the visitor presses play.
     return f'''<div class="video" data-src="https://www.youtube-nocookie.com/embed/{vid}?autoplay=1&rel=0{start}">
@@ -44,7 +46,8 @@ def rating(g):
     if not r:
         return ''
     if src == 'steam' and n:
-        count = f'{n/1e6:.1f}M' if n >= 1e6 else f'{n/1e3:.0f}k' if n >= 1e4 else f'{n:,}'
+        # Rounded, so a page doesn't change (and get re-published) every time a game picks up a few reviews.
+        count = f'{n/1e6:.1f}M' if n >= 1e6 else f'{n/1e3:.0f}k' if n >= 1e4 else f'{round(n, -2):,}' if n >= 1000 else 'under 1,000' if n >= 100 else 'a few'
         return f'<p class="rating"><b>{r}%</b> positive on Steam ({count} reviews)</p>'
     return f'<p class="rating"><b>{r}</b> / 100 critic score</p>'
 
@@ -59,7 +62,7 @@ def page(g):
     plats = ''.join(f'<li>{e(label(PLATFORMS, p))}</li>' for p in g.get('platforms') or [])
     genres = ''.join(f'<li>{e(label(GENRES, x))}</li>' for x in (g.get('genres') or [])[:6])
     stores = ''.join(f'<a class="store" href="{e(u)}" rel="nofollow noopener">{e(label(STORES, k))}</a>'
-                     for k, u in (g.get('stores') or {}).items() if u)
+                     for k, u in (g.get('stores') or {}).items() if isinstance(u, str) and u.startswith('https://'))
     hours = f"<p class=\"small\">About {round(g['hoursMain'])} hours to finish the main story.</p>" if g.get('hoursMain') else ''
     age = f'<p class="small">Age rating {int(g["age"])}+.</p>' if g.get('age') else ''
     meta_desc = e((hook or desc)[:160])
@@ -121,14 +124,23 @@ def main():
     if src:
         games = json.load(open(src, encoding='utf-8'))['games']
     else:
-        with urllib.request.urlopen(CATALOGUE, timeout=120) as r:
-            games = json.load(r)['games']
+        games, problem = None, None
+        for url in CATALOGUES:
+            try:
+                req = urllib.request.Request(url, headers={'User-Agent': 'lfgame-pages'})
+                with urllib.request.urlopen(req, timeout=120) as r:
+                    games = json.load(r)['games']
+                break
+            except Exception as ex:  # try the next copy
+                problem = ex
+        if games is None:
+            sys.exit(f'Could not download the catalogue: {problem}')
     if len(games) < 1000:
         sys.exit(f'Only {len(games)} games in the catalogue: not touching the pages.')
     changed = 0
     for g in games:
         gid = g.get('id') or ''
-        if not gid or '/' in gid or gid.startswith('.'):
+        if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,250}', gid):
             continue
         d = os.path.join(ROOT, 'g', gid)
         p = os.path.join(d, 'index.html')
