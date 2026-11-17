@@ -11,6 +11,7 @@
 <meta property="og:image" content="https://lfgame.co.uk/assets/icon.png">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0B0C10">
+<meta name="apple-itunes-app" content="app-id=6835639075">
 <link rel="icon" href="/assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +48,7 @@
     <div class="box" id="group" hidden></div>
     <a class="btn" id="get" href="https://play.google.com/store/apps/details?id=uk.co.lfgame.app">Join the group</a>
     <small id="have">Already have the app? Open it, tap Discover at the top, choose Co-op, then <b>Join with a code</b> and enter <span class="code" id="code">your code</span></small>
-    <small>Free on Android. Looking For Game is in testing; iPhone comes later.</small>
+    <small id="foot">Free on Android and iPhone.</small>
   </div>
 </main>
 <script>
@@ -57,6 +58,15 @@
   var c = (new URLSearchParams(location.search).get('c') || location.hash.slice(1) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
   if (!c) return;
   document.getElementById('code').textContent = c;
+  // iPhone and iPad: the App Store can't pass the code on to a newly installed app (Google Play can), so the
+  // friend installs, then taps the invite link again, which opens the app on the join screen. The code is shown
+  // large as the fallback. Everyone else goes to Google Play as before.
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent || '')) {
+    var get = document.getElementById('get');
+    get.href = 'https://apps.apple.com/app/id6835639075';
+    get.textContent = 'Get the app';
+    document.getElementById('have').innerHTML = '<b>Then tap your invite link again</b> to join the group. Or open the app, tap Discover at the top, choose Co-op, then <b>Join with a code</b> and enter <span class="code">' + c + '</span>';
+  } else
   document.getElementById('get').href = 'https://play.google.com/store/apps/details?id=uk.co.lfgame.app&referrer=' + encodeURIComponent('coop=' + c + '&utm_source=coop_invite');
   fetch('https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/coop_preview', {
     method: 'POST', headers: { 'Content-Type': 'application/json', apikey: 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm' },

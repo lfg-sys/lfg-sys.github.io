@@ -82,6 +82,7 @@ def page(g):
 <meta property="og:site_name" content="Looking For Game">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0B0C10">
+<meta name="apple-itunes-app" content="app-id=6835639075, app-argument={SITE}/g/{e(gid)}/">
 <link rel="icon" href="/assets/favicon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap">
