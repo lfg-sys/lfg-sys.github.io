@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["JF2C789H8T.uk.co.lfgame.app"],
+        "components": [
+          { "/": "/g/*" },
+          { "/": "/g/*/" },
+          { "/": "/join" },
+          { "/": "/join/" }
+        ]
+      }
+    ]
+  }
+}
