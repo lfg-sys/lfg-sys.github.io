@@ -17,80 +17,106 @@
 <link rel="preload" href="/assets/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('fx')</script>
 <style>
+  /* Design 2: the page is one scroll-driven story. Scrolling deals the cards on the phone, swaps the copy beside it,
+     slides the features sideways and opens the lime Join panel. A small script (bottom of the page) turns scroll position
+     into numbers; these styles turn the numbers into movement. With reduced motion on, or without the script, the
+     same content sits in a plain stacked layout (everything outside the .fx rules). */
+
   /* ---------- Header ---------- */
-  header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: saturate(160%) blur(16px); -webkit-backdrop-filter: saturate(160%) blur(16px); }
+  header { position: fixed; inset: 0 0 auto 0; z-index: 30; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: saturate(160%) blur(16px); -webkit-backdrop-filter: saturate(160%) blur(16px); }
   .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 68px; }
   .links { display: flex; align-items: center; gap: 30px; font-size: 15px; }
   .links a:not(.btn) { color: var(--soft); text-decoration: none; transition: color .15s; }
   .links a:not(.btn):hover { color: var(--text); }
+  .meter { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--lime); transform-origin: 0 50%; transform: scaleX(var(--page, 0)); }
+  main { padding-top: 68px; }
 
-  /* ---------- Hero: the headline, and the app itself to try ---------- */
-  .hero { position: relative; padding: clamp(36px, 7vw, 96px) 0 clamp(64px, 9vw, 128px); overflow: clip; }
-  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: center; gap: clamp(32px, 5vw, 80px); }
+  /* ---------- The story: hero, then How it works, on one pinned stage ---------- */
+  .story { position: relative; }
+  .anchor { position: absolute; left: 0; width: 1px; height: 1px; top: 0; }
+  .story .grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(32px, 5vw, 80px); align-items: start; padding-block: clamp(36px, 7vw, 96px); }
+  .panes { display: grid; gap: clamp(90px, 14vw, 200px); }
+  .echo, .glow, .ring { display: none; }
+
   .status { display: inline-flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--soft); }
   .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); animation: pulse 2.4s ease-out infinite; }
   @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(184,243,90,.5); } 100% { box-shadow: 0 0 0 12px rgba(184,243,90,0); } }
-  .hero h1 { font-size: clamp(46px, 7.6vw, 116px); line-height: .92; letter-spacing: -0.055em; margin: 22px 0 28px; }
+  h1 { font-size: clamp(44px, 7.4vw, 112px); line-height: .92; letter-spacing: -0.055em; margin: 22px 0 28px; }
+  h1 .w { display: inline-block; overflow: clip; overflow-clip-margin: .12em; vertical-align: top; padding-bottom: .12em; margin-bottom: -.12em; }
+  h1 .w i { display: inline-block; font-style: normal; }
   .lead { font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; max-width: 33em; margin-bottom: 34px; }
   .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
   .note { font-size: 14.5px; color: var(--muted); margin-top: 18px; }
+  .label { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
+  .intro h2, .sec-head h2 { font-size: clamp(34px, 5vw, 68px); line-height: 1; letter-spacing: -0.045em; }
+  .intro h2 + p { margin-top: 22px; font-size: clamp(17px, 1.5vw, 20px); max-width: 34em; }
+  .step h3 { font-size: clamp(72px, 15vw, 230px); line-height: .84; letter-spacing: -0.065em; color: var(--c); margin: 0 0 .16em -.04em;
+             text-shadow: 0 0 60px color-mix(in srgb, var(--c) 55%, transparent), 0 0 6px color-mix(in srgb, var(--c) 45%, transparent); }
+  .step p { max-width: 27em; font-size: clamp(17px, 1.5vw, 20px); }
+  .step.swipe { --c: var(--teal); } .step.watch { --c: var(--violet); } .step.play { --c: var(--lime); }
 
-  /* The page-load moment: the headline rises once, then everything holds still until the visitor acts. */
-  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
-  .hero .status, .hero h1, .hero .lead, .hero .ctas, .hero .note, .try { animation: rise .9s var(--ease) both; }
-  .hero h1 { animation-delay: .06s; } .hero .lead { animation-delay: .14s; } .hero .ctas { animation-delay: .2s; } .hero .note { animation-delay: .26s; } .try { animation-delay: .18s; }
-
-  /* The phone. Its cards are real screens from the app and can be dragged, like the app. */
-  .try { display: flex; flex-direction: column; align-items: center; gap: 18px; }
-  .phone { position: relative; width: min(320px, 76vw); aspect-ratio: 9 / 16.6; border-radius: 46px; padding: 11px; background: #050608;
-           box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 50px 100px -30px rgba(0,0,0,.9), 0 0 140px -40px rgba(184,243,90,.28); }
-  .deck { position: relative; width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--bg); touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; isolation: isolate; }
-  .deck.dragging { cursor: grabbing; }
-  .deck figure { position: absolute; inset: 0; margin: 0; opacity: 0; transform: scale(.94); transition: transform .45s var(--ease), opacity .3s; will-change: transform; }
-  .deck figure img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
-  .deck figure.top { opacity: 1; transform: none; z-index: 2; }
-  .deck figure.next { opacity: 1; transform: scale(.94); z-index: 1; }
-  .deck.dragging figure.top { transition: none; }
-  .stamp { position: absolute; z-index: 3; top: 9%; padding: 6px 14px; border-radius: 10px; font: 700 22px/1 var(--display); letter-spacing: -0.02em; opacity: 0; pointer-events: none; }
+  .device { position: sticky; top: 100px; display: flex; justify-content: center; }
+  .phone { position: relative; height: min(68svh, 640px); aspect-ratio: 9 / 16.6; border-radius: 46px; padding: 11px; background: #050608;
+           box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 50px 100px -30px rgba(0,0,0,.9); }
+  .deck { position: relative; width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--bg); isolation: isolate; }
+  .deck figure { position: absolute; inset: 0; margin: 0; will-change: transform; }
+  .deck figure:not(:first-child) { display: none; }
+  .deck figure img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .stamp { position: absolute; z-index: 6; top: 9%; padding: 6px 14px; border-radius: 10px; font: 700 22px/1 var(--display); letter-spacing: -0.02em; opacity: 0; }
   .stamp.save { left: 7%; background: var(--lime); color: var(--ink); rotate: -8deg; }
   .stamp.skip { right: 7%; background: var(--coral); color: var(--ink); rotate: 8deg; }
-  .try-row { display: flex; align-items: center; gap: 14px; font-size: 14.5px; color: var(--muted); min-height: 40px; }
-  .try-row button { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: transparent; color: var(--text); font: 600 14.5px var(--body); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line-strong); transition: box-shadow .15s, color .15s; }
-  .try-row button[data-swipe="left"]:hover { box-shadow: inset 0 0 0 1px var(--coral); color: var(--coral); }
-  .try-row button[data-swipe="right"]:hover { box-shadow: inset 0 0 0 1px var(--lime); color: var(--lime); }
-  .try-row span { min-width: 9.5em; text-align: center; }
 
-  /* ---------- Sections ---------- */
+  /* ----- with the script running ----- */
+  .fx .story { height: 640vh; }
+  .fx .anchor { top: calc((100% - 100vh) * .15); }
+  .fx .stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: clip; margin-top: -68px; }
+  .fx .story .grid { height: 100%; align-items: center; padding-block: 68px 0; position: relative; }
+  .fx .panes { position: relative; height: 100%; display: block; }
+  .fx .pane { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+              opacity: var(--o, 0); transform: translate3d(0, calc(var(--y, 0) * 1px), 0); will-change: opacity, transform; }
+  .fx .pane:first-child { --o: 1; }
+  .fx .pane.off { visibility: hidden; }
+  .fx .step h3 { transform: scale(var(--s, 1)); transform-origin: 0 60%; }
+  .fx .device { position: relative; top: auto; transform: perspective(1400px) translate3d(0, calc(var(--h, 1) * var(--drop, 0%)), 0) rotateY(calc(var(--h, 1) * -24deg)) rotateZ(calc(var(--h, 1) * 5deg)); will-change: transform; }
+  .fx .deck figure:not(:first-child) { display: block; }
+  .fx .deck figure:nth-child(1) { z-index: 4; } .fx .deck figure:nth-child(2) { z-index: 3; } .fx .deck figure:nth-child(3) { z-index: 2; } .fx .deck figure:nth-child(4) { z-index: 5; transform: translateY(101%); }
+  /* The gameplay video on the card, picked out while "Watch." is on screen. */
+  .fx .ring { display: block; position: absolute; z-index: 5; top: 0; left: 9.6%; right: 9.6%; height: 25.6%; border-radius: 0 0 14px 14px; pointer-events: none; opacity: var(--ring, 0);
+              box-shadow: inset 0 0 0 2px var(--violet), 0 0 0 100vmax rgba(11,12,16,.62), 0 0 44px 4px color-mix(in srgb, var(--violet) 70%, transparent); }
+  /* Light behind the phone that takes each step's colour. */
+  .fx .glow { display: block; position: absolute; inset: -34% -60%; z-index: -1; border-radius: 50%; pointer-events: none; filter: blur(30px); }
+  .fx .glow.l { background: radial-gradient(closest-side, rgba(184,243,90,.26), transparent); opacity: var(--gl, 1); }
+  .fx .glow.t { background: radial-gradient(closest-side, rgba(79,227,193,.3), transparent); opacity: var(--gt, 0); }
+  .fx .glow.v { background: radial-gradient(closest-side, rgba(181,140,255,.34), transparent); opacity: var(--gv, 0); }
+  /* The three words in outline, drifting across the whole stage behind everything. */
+  .fx .echo { display: block; position: absolute; left: 0; top: 50%; z-index: 0; white-space: nowrap; pointer-events: none; font: 700 46vh/1 var(--display); letter-spacing: -0.06em; color: transparent;
+               -webkit-text-stroke: 1px rgba(255,255,255,.075); transform: translate3d(calc(var(--gx, 0) * -1px), -50%, 0); opacity: var(--go, 0); will-change: transform; }
+
+  /* The one load moment: the headline's words rise out of their own baseline. */
+  @keyframes up { from { transform: translateY(105%); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  .fx h1 .w i { animation: up .9s var(--ease) both; animation-delay: calc(var(--n) * 55ms); }
+  .fx .status, .fx .lead, .fx .ctas, .fx .note { animation: rise .9s var(--ease) both .35s; }
+  .fx .phone { animation: rise 1.1s var(--ease) both .2s; }
+
+  /* ---------- Features: scrolling down carries the row sideways ---------- */
   section { padding: clamp(72px, 10vw, 150px) 0; }
-  .label { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
-  .sec-head { max-width: 780px; margin-bottom: clamp(40px, 6vw, 84px); }
-  .sec-head h2 { font-size: clamp(34px, 5vw, 68px); line-height: 1; letter-spacing: -0.045em; }
-  .sec-head h2 + p { margin-top: 22px; font-size: clamp(17px, 1.5vw, 20px); max-width: 34em; }
+  .sec-head { max-width: 780px; margin-bottom: clamp(32px, 5vw, 64px); }
+  .track { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; padding-inline: max(var(--gutter), calc((100vw - 1240px) / 2 + var(--gutter))); }
+  .track div { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; min-height: 280px; padding: 30px; border-radius: 32px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--line); }
+  .track div::after { content: ""; position: absolute; right: -30%; bottom: -45%; width: 90%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 30%, transparent), transparent); pointer-events: none; }
+  .track div:nth-child(3n+1) { --c: var(--teal); } .track div:nth-child(3n+2) { --c: var(--violet); } .track div:nth-child(3n) { --c: var(--lime); }
+  .track dt { font: 700 clamp(28px, 2.9vw, 44px)/1 var(--display); letter-spacing: -0.045em; color: var(--text); max-width: 8em; }
+  .track dd { margin: 0; font-size: 16.5px; max-width: 22em; position: relative; z-index: 1; }
+  .fx .rail { height: 340vh; padding: 0; }
+  .fx .rail .stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: clip; display: flex; flex-direction: column; justify-content: center; padding-top: 68px; }
+  .fx .rail .sec-head { margin-bottom: clamp(24px, 4vh, 56px); }
+  .fx .track { display: flex; width: max-content; transform: translate3d(calc(var(--tx, 0) * -1px), 0, 0); will-change: transform; }
+  .fx .track div { width: clamp(280px, 31vw, 460px); height: min(48svh, 440px); min-height: 250px; flex: none; }
 
-  /* Swipe. Watch. Play. The three words are the section; each lights up in its own colour as it reaches the reader. */
-  .steps { border-bottom: 1px solid var(--line); }
-  .step { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(20px, 5vw, 80px); align-items: end; padding: clamp(18px, 2.6vw, 36px) 0 clamp(22px, 3vw, 42px); border-top: 1px solid var(--line); }
-  .step h3 { font-size: clamp(64px, 14.5vw, 216px); line-height: .84; letter-spacing: -0.065em; color: var(--c); text-shadow: 0 0 46px color-mix(in srgb, var(--c) 50%, transparent), 0 0 5px color-mix(in srgb, var(--c) 45%, transparent); }
-  .step p { max-width: 26em; padding-bottom: .4em; }
-  .step.swipe { --c: var(--teal); } .step.watch { --c: var(--violet); } .step.play { --c: var(--lime); }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      @keyframes ignite { from { color: #23262e; text-shadow: none; } }
-      @keyframes arrive { from { opacity: .25; } }
-      .step h3 { animation: ignite linear both; animation-timeline: view(); animation-range: entry 35% cover 42%; }
-      .step p { animation: arrive linear both; animation-timeline: view(); animation-range: entry 60% cover 40%; }
-    }
-  }
-
-  /* Features: six plain facts on a ruled grid. No icons, nothing to decode. */
-  .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--line); }
-  .features div { padding: 30px 32px 38px 0; border-bottom: 1px solid var(--line); }
-  .features div:not(:nth-child(3n+1)) { padding-left: 32px; border-left: 1px solid var(--line); }
-  .features dt { font: 700 23px/1.15 var(--display); letter-spacing: -0.03em; color: var(--text); margin-bottom: 10px; }
-  .features dd { margin: 0; font-size: 16px; max-width: 24em; }
-
-  /* For developers / Your privacy */
+  /* ---------- For developers / Your privacy ---------- */
   .pair { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
   .pair > div { padding: clamp(32px, 4.5vw, 64px) clamp(0px, 4vw, 64px) 0 0; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
   .pair > div + div { padding-left: clamp(24px, 4vw, 64px); padding-right: 0; border-left: 1px solid var(--line); }
@@ -101,11 +127,15 @@
   .pair li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); }
   .pair .btn { margin-top: auto; }
   .pair > div > :nth-last-child(2) { margin-bottom: 12px; }
+  .fx .pair > div > * { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 70ms); }
+  .fx .pair.in > div > * { opacity: 1; transform: none; }
 
-  /* Join: the one lime surface on the site, because lime means yes. */
-  .join { padding-top: 0; }
-  .join .panel { background: var(--lime); color: var(--ink); border-radius: clamp(28px, 4vw, 56px); padding: clamp(44px, 8vw, 120px) clamp(24px, 6vw, 96px); display: grid; gap: 26px; justify-items: start; }
-  .join h2 { color: var(--ink); font-size: clamp(38px, 6.6vw, 100px); line-height: .92; letter-spacing: -0.055em; max-width: 11em; }
+  /* ---------- Join: the lime panel opens out to the full width of the screen ---------- */
+  .join { padding: 0; }
+  .join .panel { background: var(--lime); color: var(--ink); min-height: 92vh; min-height: 92svh; padding: clamp(72px, 10vw, 140px) max(var(--gutter), calc((100vw - 1240px) / 2 + var(--gutter))); display: grid; gap: 26px; justify-items: start; align-content: center; }
+  .fx .join .panel { clip-path: inset(calc((1 - var(--j, 0)) * 9%) calc((1 - var(--j, 0)) * 7%) round calc((1 - var(--j, 0)) * 90px)); will-change: clip-path; }
+  .fx .join .panel > * { transform: translate3d(0, calc((1 - var(--j, 0)) * 60px), 0); }
+  .join h2 { color: var(--ink); font-size: clamp(40px, 8vw, 132px); line-height: .9; letter-spacing: -0.06em; max-width: 10em; }
   .join p { font-size: clamp(17px, 1.5vw, 20px); max-width: 32em; color: #1c2410; }
   .join .btn { background: var(--ink); color: var(--lime); }
   .join .btn:hover { box-shadow: 0 14px 30px -12px rgba(11,12,16,.6); }
@@ -127,7 +157,7 @@
   .join .join-done { background: var(--ink); border-color: var(--ink); color: var(--text); }
 
   /* ---------- Footer ---------- */
-  footer { padding: 8px 0 56px; font-size: 14.5px; color: var(--muted); }
+  footer { padding: 64px 0 56px; font-size: 14.5px; color: var(--muted); }
   .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); gap: 32px; }
   .foot p { margin-top: 14px; }
   .foot h4 { font: 600 14.5px var(--body); letter-spacing: 0; margin-bottom: 12px; }
@@ -139,23 +169,31 @@
 
   @media (max-width: 900px) {
     .links a:not(.btn) { display: none; }
-    .hero .wrap { grid-template-columns: 1fr; gap: 56px; }
-    .step { grid-template-columns: 1fr; gap: 16px; align-items: start; }
-    .step h3 { font-size: clamp(72px, 22vw, 180px); }
-    .features { grid-template-columns: 1fr 1fr; }
-    .features div:nth-child(n) { padding: 26px 22px 30px 0; border-left: 0; }
-    .features div:nth-child(even) { padding-left: 22px; padding-right: 0; border-left: 1px solid var(--line); }
+    .story .grid { grid-template-columns: 1fr; }
+    .device { position: static; }
+    .track { grid-template-columns: 1fr 1fr; }
     .pair { grid-template-columns: 1fr; }
     .pair > div { padding: 40px 0 0; }
     .pair > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 48px; }
     .foot { grid-template-columns: 1fr 1fr; }
     .foot > div:first-child { grid-column: 1 / -1; }
+    /* On a phone the copy takes the top of the stage and the handset rises into the bottom of it. */
+    .fx .story .grid { display: block; padding-block: 68px 0; }
+    .fx .pane { justify-content: flex-start; padding-top: clamp(20px, 5svh, 48px); }
+    .fx .device { position: absolute; left: 0; right: 0; bottom: 2svh; --drop: 76%; }
+    .fx .phone { height: 50svh; border-radius: 34px; padding: 8px; }
+    .fx .deck { border-radius: 27px; }
+    .fx .step h3 { font-size: clamp(72px, 23vw, 180px); }
+    .fx .lead { margin-bottom: 22px; }
+    .fx h1 { margin: 16px 0 18px; }
+    .fx .echo { font-size: 30vh; top: 72%; }
+    .fx .track div { width: 78vw; }
   }
   @media (max-width: 560px) {
-    .features { grid-template-columns: 1fr; }
-    .features div:nth-child(n) { padding: 24px 0 28px; border-left: 0; }
-    .hero .ctas .btn { flex: 1 1 auto; }
+    .track { grid-template-columns: 1fr; }
+    .ctas .btn { flex: 1 1 auto; }
   }
+  @media (max-height: 700px) and (max-width: 900px) { .fx .lead { font-size: 15.5px; } .fx h1 { font-size: 40px; } .fx .note { display: none; } }
 </style>
 <script type="speculationrules">{"prefetch":[{"urls":["/privacy/","/terms/","/delete-data/"],"eagerness":"moderate"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Looking For Game","legalName":"Rung App Ltd","url":"https://lfgame.co.uk/","logo":"https://lfgame.co.uk/assets/icon.png","email":"lfg@lfgame.co.uk"}</script>
@@ -172,57 +210,54 @@
       <a class="btn small" href="#join" data-join-jump>Join the test</a>
     </nav>
   </div>
+  <i class="meter" aria-hidden="true"></i>
 </header>
 
 <main>
-  <div class="hero">
-    <div class="wrap">
-      <div>
-        <span class="status"><i></i>In testing on Android · iPhone to follow</span>
-        <h1>Find your next game through gameplay</h1>
-        <p class="lead">Looking For Game is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
-        <div class="ctas">
-          <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
-          <a class="btn ghost" href="#how">See how it works</a>
-        </div>
-        <p class="note">Free to use. No account needed.</p>
-      </div>
-
-      <div class="try">
-        <div class="phone">
-          <div class="deck" id="deck" tabindex="0" role="group" aria-label="Try it: four screens from the app. Swipe right to save, left to skip, or use the arrow keys.">
-            <figure class="top"><picture><source srcset="/assets/app/discover-1.avif" type="image/avif"><source srcset="/assets/app/discover-1.webp" type="image/webp"><img src="/assets/app/discover-1.jpg" alt="A game card in the app: gameplay video on top, then the game's platforms, hours to finish, rating and the Skip and Save buttons." width="540" height="960" fetchpriority="high"></picture></figure>
-            <figure class="next"><picture><source srcset="/assets/app/game-page.avif" type="image/avif"><source srcset="/assets/app/game-page.webp" type="image/webp"><img src="/assets/app/game-page.jpg" alt="A game's page in the app, with its details and the price at each store." width="540" height="960"></picture></figure>
-            <figure><picture><source srcset="/assets/app/discover-2.avif" type="image/avif"><source srcset="/assets/app/discover-2.webp" type="image/webp"><img src="/assets/app/discover-2.jpg" alt="Another game card in the app." width="540" height="960" loading="lazy"></picture></figure>
-            <figure><picture><source srcset="/assets/app/wishlist.avif" type="image/avif"><source srcset="/assets/app/wishlist.webp" type="image/webp"><img src="/assets/app/wishlist.jpg" alt="The wishlist in the app: saved games with their prices and discounts." width="540" height="960" loading="lazy"></picture></figure>
-            <b class="stamp save" aria-hidden="true">Save</b>
-            <b class="stamp skip" aria-hidden="true">Skip</b>
+  <div class="story" id="story">
+    <span class="anchor" id="how"></span>
+    <div class="stage">
+      <div class="echo" aria-hidden="true">Swipe. Watch. Play. Swipe. Watch. Play.</div>
+      <div class="wrap grid">
+        <div class="panes">
+          <div class="pane">
+            <span class="status"><i></i>In testing on Android · iPhone to follow</span>
+            <h1 aria-label="Find your next game through gameplay"><span class="w" aria-hidden="true"><i style="--n:0">Find</i></span> <span class="w" aria-hidden="true"><i style="--n:1">your</i></span> <span class="w" aria-hidden="true"><i style="--n:2">next</i></span> <span class="w" aria-hidden="true"><i style="--n:3">game</i></span> <span class="w" aria-hidden="true"><i style="--n:4">through</i></span> <span class="w" aria-hidden="true"><i style="--n:5">gameplay</i></span></h1>
+            <p class="lead">Looking For Game is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
+            <div class="ctas">
+              <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
+              <a class="btn ghost" href="#how">See how it works</a>
+            </div>
+            <p class="note">Free to use. No account needed.</p>
           </div>
+          <div class="pane intro"><p class="label">How it works</p><h2>Three seconds to know if a game is for you.</h2><p>Store pages and trailers show a game at its best. Looking For Game shows you what playing it is actually like.</p></div>
+          <div class="pane step swipe"><h3>Swipe.</h3><p>Flick through a deck of games. Skip it or save it: each choice shapes the rest of your deck, so the more you swipe, the better it gets.</p></div>
+          <div class="pane step watch"><h3>Watch.</h3><p>Every card opens with real gameplay, muted and ready to go, so you see the game being played rather than a sales pitch.</p></div>
+          <div class="pane step play"><h3>Play.</h3><p>Saved games wait on your wishlist with the best price we can find. One tap takes you to the store.</p></div>
         </div>
-        <div class="try-row">
-          <button type="button" data-swipe="left">Skip</button>
-          <span id="tally" role="status">Drag the card, or tap</span>
-          <button type="button" data-swipe="right">Save</button>
+
+        <div class="device" id="device">
+          <div class="phone">
+            <i class="glow l"></i><i class="glow t"></i><i class="glow v"></i>
+            <div class="deck" id="deck">
+              <figure><picture><source srcset="/assets/app/discover-1.avif" type="image/avif"><source srcset="/assets/app/discover-1.webp" type="image/webp"><img src="/assets/app/discover-1.jpg" alt="A game card in the app: gameplay video on top, then the game's platforms, hours to finish, rating and the Skip and Save buttons." width="540" height="960" fetchpriority="high"></picture></figure>
+              <figure><picture><source srcset="/assets/app/discover-2.avif" type="image/avif"><source srcset="/assets/app/discover-2.webp" type="image/webp"><img src="/assets/app/discover-2.jpg" alt="Another game card in the app, with its gameplay video playing." width="540" height="960"></picture></figure>
+              <figure><picture><source srcset="/assets/app/wishlist.avif" type="image/avif"><source srcset="/assets/app/wishlist.webp" type="image/webp"><img src="/assets/app/wishlist.jpg" alt="The wishlist in the app: saved games with their prices and discounts." width="540" height="960"></picture></figure>
+              <figure><picture><source srcset="/assets/app/game-page.avif" type="image/avif"><source srcset="/assets/app/game-page.webp" type="image/webp"><img src="/assets/app/game-page.jpg" alt="A game's page in the app, with its details and the price at each store." width="540" height="960"></picture></figure>
+              <i class="ring" aria-hidden="true"></i>
+              <b class="stamp save" aria-hidden="true">Save</b>
+              <b class="stamp skip" aria-hidden="true">Skip</b>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <section id="how">
-    <div class="wrap">
-      <div class="sec-head"><p class="label">How it works</p><h2>Three seconds to know if a game is for you.</h2><p>Store pages and trailers show a game at its best. Looking For Game shows you what playing it is actually like.</p></div>
-      <div class="steps">
-        <div class="step swipe"><h3>Swipe.</h3><p>Flick through a deck of games. Skip it or save it: each choice shapes the rest of your deck, so the more you swipe, the better it gets.</p></div>
-        <div class="step watch"><h3>Watch.</h3><p>Every card opens with real gameplay, muted and ready to go, so you see the game being played rather than a sales pitch.</p></div>
-        <div class="step play"><h3>Play.</h3><p>Saved games wait on your wishlist with the best price we can find. One tap takes you to the store.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="features">
-    <div class="wrap">
-      <div class="sec-head"><p class="label">Features</p><h2>Built for people who'd rather play than scroll.</h2></div>
-      <dl class="features">
+  <section class="rail" id="features">
+    <div class="stage">
+      <div class="wrap"><div class="sec-head"><p class="label">Features</p><h2>Built for people who'd rather play than scroll.</h2></div></div>
+      <dl class="track" id="track">
         <div><dt>Gameplay first</dt><dd>Videos of people actually playing the game, with trailers there too.</dd></div>
         <div><dt>Only what you can play</dt><dd>Pick your platforms, genres, price and play time. Your deck only shows games that fit.</dd></div>
         <div><dt>The best price</dt><dd>Prices from the stores you use, in your currency, with sales flagged so you know when to buy.</dd></div>
@@ -235,35 +270,33 @@
 
   <section id="developers">
     <div class="wrap">
-      <div class="pair">
+      <div class="pair" id="pair">
         <div>
           <p class="label">For game developers</p>
-          <h3>Put your game in front of players who want it.</h3>
-          <p>Looking For Game is built around watching games being played. If you'd like to talk about featuring your game, we'd love to hear from you.</p>
-          <a class="btn ghost" href="mailto:lfg@lfgame.co.uk?subject=Sponsored%20cards%20on%20LFG">Talk to us</a>
+          <h3 style="--i:1">Put your game in front of players who want it.</h3>
+          <p style="--i:2">Looking For Game is built around watching games being played. If you'd like to talk about featuring your game, we'd love to hear from you.</p>
+          <a class="btn ghost" style="--i:3" href="mailto:lfg@lfgame.co.uk?subject=Sponsored%20cards%20on%20LFG">Talk to us</a>
         </div>
         <div>
-          <p class="label">Your privacy</p>
-          <h3>Your deck, your data.</h3>
-          <p>Looking For Game works without an account. What you save lives on your phone unless you choose to sign in.</p>
-          <ul>
+          <p class="label" style="--i:1">Your privacy</p>
+          <h3 style="--i:2">Your deck, your data.</h3>
+          <p style="--i:3">Looking For Game works without an account. What you save lives on your phone unless you choose to sign in.</p>
+          <ul style="--i:4">
             <li>No account needed to swipe and save</li>
             <li>Usage data only if you switch it on</li>
             <li>Delete your data at any time, in the app or on this site</li>
           </ul>
-          <a class="btn ghost" href="/privacy/">Read the privacy notice</a>
+          <a class="btn ghost" style="--i:5" href="/privacy/">Read the privacy notice</a>
         </div>
       </div>
     </div>
   </section>
 
   <section class="join" id="join">
-    <div class="wrap">
-      <div class="panel">
-        <h2>Be one of the first to try Looking For Game.</h2>
-        <p>Looking For Game is in closed testing on Android. Leave the email address of your Google Play account and we'll add you to the test.</p>
-        <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
-      </div>
+    <div class="panel" id="panel">
+      <h2>Be one of the first to try Looking For Game.</h2>
+      <p>Looking For Game is in closed testing on Android. Leave the email address of your Google Play account and we'll add you to the test.</p>
+      <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
     </div>
   </section>
 </main>
@@ -286,74 +319,60 @@
 </footer>
 
 <script>
-// The phone at the top: four real screens, dealt as a deck. Drag one right to save it or left to skip it, tap Skip or
-// Save, or use the arrow keys. It deals itself slowly until the visitor touches it, then leaves them in charge.
+// Scroll story. Reads how far the visitor has scrolled through each pinned section and writes plain numbers
+// (CSS variables and a few transforms); the stylesheet does the rest. Off when the visitor asks for reduced motion.
 (function () {
-  var deck = document.getElementById('deck'); if (!deck) return;
-  var cards = [].slice.call(deck.querySelectorAll('figure'));
-  var save = deck.querySelector('.stamp.save'), skip = deck.querySelector('.stamp.skip'), tally = document.getElementById('tally');
-  var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var top = 0, saved = 0, skipped = 0, busy = false, touched = false, timer = null, start = null, dx = 0, lastX = 0, lastT = 0, vx = 0;
-  function layout() {
-    cards.forEach(function (c, i) {
-      c.classList.toggle('top', i === top);
-      c.classList.toggle('next', i === (top + 1) % cards.length);
-      c.style.transform = ''; c.style.opacity = '';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var root = document.documentElement; root.classList.add('fx');
+  var $ = function (id) { return document.getElementById(id); };
+  var story = $('story'), device = $('device'), deck = $('deck'), rail = $('features'), track = $('track'), panel = $('panel'), pair = $('pair');
+  var panes = [].slice.call(story.querySelectorAll('.pane')), cards = deck.querySelectorAll('figure');
+  var ghost = story.querySelector('.echo'), save = deck.querySelector('.save'), skip = deck.querySelector('.skip'), ring = deck.querySelector('.ring'), meter = document.querySelector('.meter');
+  var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+  var span = function (p, a, b) { return clamp((p - a) / (b - a)); };
+  var ease = function (t) { return t * t * (3 - 2 * t); };
+  var bell = function (p, a, b, c, d) { return Math.min(ease(span(p, a, b)), 1 - ease(span(p, c, d))); };
+  var through = function (el) { var r = el.getBoundingClientRect(); return clamp(-r.top / Math.max(1, r.height - innerHeight)); };
+  // When each block of copy holds the stage (as a share of the story's scroll): hero, intro, Swipe, Watch, Play.
+  var WIN = [[0, .12], [.12, .28], [.28, .52], [.52, .76], [.76, 1]], FADE = .035;
+  var queued = false;
+  function frame() {
+    queued = false;
+    var p = through(story);
+    panes.forEach(function (el, i) {
+      var w = WIN[i], inn = i === 0 ? 1 : ease(span(p, w[0], w[0] + FADE)), out = i === panes.length - 1 ? 0 : ease(span(p, w[1] - FADE, w[1]));
+      var o = Math.min(inn, 1 - out);
+      el.style.setProperty('--o', o.toFixed(3)); el.style.setProperty('--y', ((1 - inn) * 56 - out * 56).toFixed(1)); el.style.setProperty('--s', (1 + (1 - inn) * .22).toFixed(3));
+      el.classList.toggle('off', o < .01);
     });
-    save.style.opacity = skip.style.opacity = 0;
+    // The handset: tilted at the top of the page, squares up as the story starts.
+    device.style.setProperty('--h', (1 - ease(span(p, .03, .13))).toFixed(3));
+    // Card 1 is saved (right) during Swipe; card 2 is skipped (left) at the end of Watch; the game page slides up during Play.
+    var a = ease(span(p, .36, .46)), b = ease(span(p, .66, .74)), c = ease(span(p, .86, .95));
+    cards[0].style.transform = 'translate3d(' + a * 135 + '%,0,0) rotate(' + a * 16 + 'deg)';
+    cards[1].style.transform = 'translate3d(' + -b * 135 + '%,0,0) rotate(' + -b * 16 + 'deg) scale(' + (.94 + .06 * a) + ')';
+    cards[2].style.transform = 'scale(' + (.94 + .06 * b) + ')';
+    cards[3].style.transform = 'translate3d(0,' + (1 - c) * 101 + '%,0)';
+    save.style.opacity = bell(p, .365, .40, .43, .46); skip.style.opacity = bell(p, .665, .69, .715, .74);
+    save.style.transform = 'translate3d(' + a * 60 + 'px,0,0)'; skip.style.transform = 'translate3d(' + -b * 60 + 'px,0,0)';
+    ring.style.setProperty('--ring', bell(p, .54, .58, .63, .665).toFixed(3));
+    var t = bell(p, .26, .31, .49, .54), v = bell(p, .50, .55, .73, .78);
+    device.style.setProperty('--gt', t.toFixed(3)); device.style.setProperty('--gv', v.toFixed(3)); device.style.setProperty('--gl', Math.max(0, 1 - t - v).toFixed(3));
+    ghost.style.setProperty('--go', bell(p, .14, .26, .97, 1.2).toFixed(3));
+    ghost.style.setProperty('--gx', (span(p, .12, 1) * Math.max(0, ghost.offsetWidth - innerWidth * .9) - innerWidth * .08).toFixed(1));
+    // Features: down becomes sideways.
+    track.style.setProperty('--tx', (ease(through(rail)) * Math.max(0, track.scrollWidth - innerWidth)).toFixed(1));
+    // Join: the panel opens as it comes up the screen.
+    var r = panel.getBoundingClientRect();
+    panel.style.setProperty('--j', ease(clamp((innerHeight - r.top) / (innerHeight * .85))).toFixed(3));
+    var max = document.documentElement.scrollHeight - innerHeight;
+    meter.style.setProperty('--page', max > 0 ? (scrollY / max).toFixed(4) : 0);
   }
-  function stamps(x) { save.style.opacity = Math.max(0, Math.min(1, x / 70)); skip.style.opacity = Math.max(0, Math.min(1, -x / 70)); }
-  function fling(dir, byVisitor) {
-    if (busy) return; busy = true;
-    var c = cards[top], w = deck.offsetWidth;
-    stamps(dir * 100);
-    c.style.transition = still ? 'none' : 'transform .42s cubic-bezier(.3,.1,.3,1), opacity .42s';
-    c.style.transform = 'translateX(' + dir * w * 1.35 + 'px) rotate(' + dir * 16 + 'deg)';
-    c.style.opacity = '0';
-    if (byVisitor) {
-      if (dir > 0) saved++; else skipped++;
-      tally.textContent = saved + ' saved, ' + skipped + ' skipped';
-    }
-    setTimeout(function () {
-      c.style.transition = 'none'; top = (top + 1) % cards.length; layout();
-      void c.offsetWidth; c.style.transition = ''; busy = false;
-    }, still ? 0 : 430);
-  }
-  function mine() { touched = true; clearInterval(timer); }
-  deck.addEventListener('pointerdown', function (e) {
-    if (busy || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    mine(); start = { x: e.clientX, y: e.clientY, id: e.pointerId, locked: false }; dx = 0; lastX = e.clientX; lastT = e.timeStamp; vx = 0;
-  });
-  deck.addEventListener('pointermove', function (e) {
-    if (!start || e.pointerId !== start.id) return;
-    var x = e.clientX - start.x, y = e.clientY - start.y;
-    if (!start.locked) {                       // a mostly vertical move is the visitor scrolling the page: let it go
-      if (Math.abs(x) < 6 && Math.abs(y) < 6) return;
-      if (Math.abs(y) > Math.abs(x)) { start = null; return; }
-      start.locked = true; deck.setPointerCapture(e.pointerId); deck.classList.add('dragging');
-    }
-    vx = (e.clientX - lastX) / Math.max(1, e.timeStamp - lastT); lastX = e.clientX; lastT = e.timeStamp;
-    dx = x; cards[top].style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 18 + 'deg)'; stamps(dx);
-  });
-  function drop() {
-    if (!start) return; var was = start.locked; start = null; deck.classList.remove('dragging');
-    if (!was) return;
-    if (Math.abs(dx) > deck.offsetWidth * .28 || Math.abs(vx) > .55) fling(dx > 0 || (dx === 0 && vx > 0) ? 1 : -1, true);
-    else { cards[top].style.transform = ''; stamps(0); }
-  }
-  deck.addEventListener('pointerup', drop); deck.addEventListener('pointercancel', drop);
-  deck.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight') { mine(); fling(1, true); e.preventDefault(); }
-    if (e.key === 'ArrowLeft') { mine(); fling(-1, true); e.preventDefault(); }
-  });
-  [].forEach.call(document.querySelectorAll('[data-swipe]'), function (b) {
-    b.addEventListener('click', function () { mine(); fling(b.dataset.swipe === 'right' ? 1 : -1, true); });
-  });
-  if (!still) {
-    var n = 0, seen = false;
-    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { seen = es[0].isIntersecting; }, { threshold: .5 }).observe(deck); else seen = true;
-    timer = setInterval(function () { if (!touched && seen && !document.hidden) fling(n++ % 2 ? -1 : 1, false); }, 3600);
-  }
+  function ask() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', ask, { passive: true }); addEventListener('resize', ask); addEventListener('load', ask);
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es, io) { if (es[0].isIntersecting) { pair.classList.add('in'); io.disconnect(); } }, { threshold: .25 }).observe(pair);
+  else pair.classList.add('in');
+  frame();
 })();
 
 // "Join the Android test": the button turns into an email box. The address goes to Looking For Game (lfg@lfgame.co.uk gets a
