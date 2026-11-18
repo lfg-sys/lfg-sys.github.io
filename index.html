@@ -26,7 +26,7 @@
   .links a:not(.btn):hover { color: var(--text); }
 
   /* ---------- Hero: the headline, and the app itself to try ---------- */
-  .hero { position: relative; padding: clamp(36px, 7vw, 96px) 0 clamp(64px, 9vw, 128px); overflow: clip; }
+  .hero { position: relative; padding: clamp(24px, 4vw, 56px) 0 clamp(64px, 9vw, 128px); overflow: clip; }
   .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: center; gap: clamp(32px, 5vw, 80px); }
   .status { display: inline-flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--soft); }
   .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); animation: pulse 2.4s ease-out infinite; }
@@ -43,7 +43,7 @@
 
   /* The phone. Its cards are real screens from the app and can be dragged, like the app. */
   .try { display: flex; flex-direction: column; align-items: center; gap: 18px; }
-  .phone { position: relative; width: min(292px, 70vw); border-radius: 46px; padding: 11px; background: #050608;
+  .phone { position: relative; width: clamp(240px, min(70vw / var(--z), (100svh / var(--z) - 215px) / 2.2), 420px); border-radius: 46px; padding: 11px; background: #050608;
            box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 50px 100px -30px rgba(0,0,0,.9), 0 0 140px -40px rgba(184,243,90,.28); }
   .deck { container-type: inline-size; position: relative; width: 100%; aspect-ratio: 540 / 1180; border-radius: 36px; overflow: hidden; background: var(--bg); touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; isolation: isolate; }
   .deck.dragging { cursor: grabbing; }
@@ -162,6 +162,7 @@
   @media (max-width: 900px) {
     .links a:not(.btn) { display: none; }
     .hero .wrap { grid-template-columns: 1fr; gap: 56px; }
+    .phone { width: min(76vw, 340px); }
     .step { grid-template-columns: 1fr; gap: 16px; align-items: start; }
     .step h3 { font-size: clamp(72px, 22vw, 180px); }
     .features { grid-template-columns: 1fr 1fr; }
@@ -380,13 +381,13 @@
   });
   deck.addEventListener('pointermove', function (e) {
     if (!start || e.pointerId !== start.id) return;
-    var x = e.clientX - start.x, y = e.clientY - start.y;
+    var zf = deck.getBoundingClientRect().width / deck.offsetWidth || 1, x = (e.clientX - start.x) / zf, y = (e.clientY - start.y) / zf;
     if (!start.locked) {                       // a mostly vertical move is the visitor scrolling the page: let it go
       if (Math.abs(x) < 6 && Math.abs(y) < 6) return;
       if (Math.abs(y) > Math.abs(x)) { start = null; return; }
       start.locked = true; deck.setPointerCapture(e.pointerId); deck.classList.add('dragging');
     }
-    vx = (e.clientX - lastX) / Math.max(1, e.timeStamp - lastT); lastX = e.clientX; lastT = e.timeStamp;
+    vx = (e.clientX - lastX) / zf / Math.max(1, e.timeStamp - lastT); lastX = e.clientX; lastT = e.timeStamp;
     dx = x; el(at).style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 18 + 'deg)'; stamps(at < N ? dx : 0);
   });
   deck.addEventListener('pointerup', function () {

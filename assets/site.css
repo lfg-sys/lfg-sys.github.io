@@ -16,6 +16,17 @@
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 
+/* Big screens: the whole site is drawn larger, so a 2560-wide monitor sees what a laptop sees, not a small page in
+   a large window. --z is the scale in force; anything sized from the viewport divides by it. */
+:root { --z: 1; }
+@media (min-width: 1900px) { :root { --z: 1.12; } }
+@media (min-width: 2100px) { :root { --z: 1.25; } }
+@media (min-width: 2300px) { :root { --z: 1.38; } }
+@media (min-width: 2500px) { :root { --z: 1.5; } }
+@media (min-width: 2900px) { :root { --z: 1.7; } }
+@media (min-width: 3400px) { :root { --z: 2; } }
+html { zoom: var(--z); }
+
 /* Moving between pages of the site cross-fades, and the logo stays put (browsers without it just load the page). */
 @view-transition { navigation: auto; }
 .brand { view-transition-name: brand; }
@@ -58,7 +69,7 @@ body.doc li::marker { color: var(--muted); }
 body.doc strong { color: var(--text); font-weight: 600; }
 
 /* ---------- Single-purpose pages: invites, email alerts, the test sign-up ---------- */
-body.solo { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 28px var(--gutter); }
+body.solo { min-height: calc(100vh / var(--z)); min-height: calc(100dvh / var(--z)); display: grid; place-items: center; padding: 28px var(--gutter); }
 body.solo main { width: 100%; max-width: 480px; }
 body.solo .brand { margin-bottom: 28px; }
 body.solo .card, body.solo form, body.solo .done { background: var(--raised); border: 1px solid var(--line); border-radius: 24px; padding: 32px 28px; }
