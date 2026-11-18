@@ -124,6 +124,23 @@
   .pair .btn { margin-top: auto; }
   .pair > div > :nth-last-child(2) { margin-bottom: 12px; }
 
+  /* Talk to us: the button opens the address and a short form, in place. */
+  .pair .btn[aria-expanded="true"] { display: none; }
+  .talk { width: 100%; max-width: 520px; display: grid; gap: 18px; }
+  .talk[hidden] { display: none; }
+  .talk > p b { color: var(--text); font-weight: 600; user-select: all; }
+  .talk form { display: grid; gap: 8px; }
+  .talk label { font-size: 14.5px; font-weight: 600; color: var(--text); margin-top: 8px; }
+  .talk input, .talk textarea { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--raised); color: var(--text); font: 16px/1.5 var(--body); }
+  .talk textarea { resize: vertical; min-height: 130px; }
+  .talk input:focus-visible, .talk textarea:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; border-color: transparent; }
+  .talk .bad { border-color: var(--coral); }
+  .talk .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .talk button { justify-self: start; margin-top: 14px; border: 0; }
+  .talk-note { font-size: 14px; color: var(--muted); }
+  .talk-note.err { color: var(--coral); }
+  .talk-done { padding: 16px 20px; border: 1px solid rgba(184,243,90,.45); border-radius: 18px; background: rgba(184,243,90,.08); color: var(--text); }
+
   /* Join: the one lime surface on the site, because lime means yes. */
   .join { padding-top: 0; }
   .join .panel { background: var(--lime); color: var(--ink); border-radius: clamp(28px, 4vw, 56px); padding: clamp(44px, 8vw, 120px) clamp(24px, 6vw, 96px); display: grid; gap: 26px; justify-items: start; }
@@ -180,6 +197,7 @@
     .hero .ctas .btn { flex: 1 1 auto; }
   }
 </style>
+<noscript><style>.talk[hidden] { display: grid !important; } [data-talk] { display: none !important; }</style></noscript>
 <script type="speculationrules">{"prefetch":[{"urls":["/privacy/","/terms/","/delete-data/"],"eagerness":"moderate"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Looking For Game","legalName":"Rung App Ltd","url":"https://lfgame.co.uk/","logo":"https://lfgame.co.uk/assets/icon.png","email":"lfg@lfgame.co.uk"}</script>
 </head>
@@ -269,7 +287,21 @@
           <p class="label">For game developers</p>
           <h3>Put your game in front of players who want it.</h3>
           <p>Looking For Game is built around watching games being played. If you'd like to talk about featuring your game, we'd love to hear from you.</p>
-          <a class="btn ghost" href="mailto:lfg@lfgame.co.uk?subject=Sponsored%20cards%20on%20LFG">Talk to us</a>
+          <a class="btn ghost" href="#talk" data-talk aria-expanded="false" aria-controls="talk">Talk to us</a>
+          <div class="talk" id="talk" hidden>
+            <p>Send us a message or email us at <b>lfg@lfgame.co.uk</b></p>
+            <form id="talkForm" novalidate>
+              <label for="talkName">Your name</label>
+              <input id="talkName" name="name" autocomplete="name" maxlength="80" required>
+              <label for="talkEmail">Your email address</label>
+              <input id="talkEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
+              <label for="talkMessage">Message</label>
+              <textarea id="talkMessage" name="message" rows="5" maxlength="4000" required></textarea>
+              <div class="trap" aria-hidden="true"><label for="talkWebsite">Leave this empty</label><input id="talkWebsite" name="website" tabindex="-1" autocomplete="off"></div>
+              <button class="btn" type="submit">Send message</button>
+              <p class="talk-note" id="talkNote" role="status">We only use your name and email address to reply to you.</p>
+            </form>
+          </div>
         </div>
         <div>
           <p class="label">Your privacy</p>
@@ -464,6 +496,43 @@
     jump.addEventListener('click', function () {
       var b = document.querySelector('#join [data-join]'); if (b) setTimeout(function () { open(b); }, 350);
     });
+  });
+})();
+
+// "Talk to us": the button opens our address and a short form in its place. The form stores the message and emails it
+// to lfg@lfgame.co.uk with the visitor's address as reply-to (database function website_message, migration 091).
+(function () {
+  var btn = document.querySelector('[data-talk]'), box = document.getElementById('talk'), form = document.getElementById('talkForm'); if (!btn || !form) return;
+  var API = 'https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/website_message';
+  var KEY = 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm';
+  var name = document.getElementById('talkName'), email = document.getElementById('talkEmail'), msg = document.getElementById('talkMessage'), note = document.getElementById('talkNote'), send = form.querySelector('button');
+  btn.addEventListener('click', function (ev) { ev.preventDefault(); box.hidden = false; btn.setAttribute('aria-expanded', 'true'); name.focus(); });
+  function say(text, err) { note.textContent = text; note.className = 'talk-note' + (err ? ' err' : ''); }
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var n = name.value.trim(), e = email.value.trim(), m = msg.value.trim();
+    var badName = !n, badEmail = !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e), badMsg = !m;
+    name.classList.toggle('bad', badName); email.classList.toggle('bad', badEmail); msg.classList.toggle('bad', badMsg);
+    if (badName) { say('Add your name so we know who to reply to.', true); name.focus(); return; }
+    if (badEmail) { say("That doesn't look like an email address.", true); email.focus(); return; }
+    if (badMsg) { say('Write a message to send.', true); msg.focus(); return; }
+    send.disabled = true; send.textContent = 'Sending…'; say('');
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY },
+      body: JSON.stringify({ p_name: n, p_email: e, p_message: m, p_source: 'developers', p_website: document.getElementById('talkWebsite').value }) })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (res) {
+        if (res === 'ok') {
+          var done = document.createElement('p'); done.className = 'talk-done'; done.setAttribute('role', 'status');
+          done.textContent = "Message sent. We'll reply to " + e + '.';
+          form.replaceWith(done); return;
+        }
+        send.disabled = false; send.textContent = 'Send message';
+        say(res === 'busy' ? "We've had a lot of messages in the last hour. Try again later, or email lfg@lfgame.co.uk." : 'Check your name, email address and message, then send again.', true);
+      })
+      .catch(function () {
+        send.disabled = false; send.textContent = 'Send message';
+        say("That didn't send. Check your connection and try again, or email lfg@lfgame.co.uk.", true);
+      });
   });
 })();
 </script>
