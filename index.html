@@ -60,7 +60,6 @@
   .try-row button[data-swipe="left"]:hover { box-shadow: inset 0 0 0 1px var(--coral); color: var(--coral); }
   .try-row button[data-swipe="right"]:hover { box-shadow: inset 0 0 0 1px var(--lime); color: var(--lime); }
   .try-row span { min-width: 9.5em; text-align: center; }
-  .credit { font-size: 13px; color: var(--muted); text-align: center; margin-top: -4px; min-height: 1.6em; }
   /* The marker that says the phone is live: a pill on the card, and the card leans left and right until it is touched. */
   .hint { position: absolute; z-index: 4; left: 50%; top: 20.5%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: var(--lime); color: var(--ink);
           font: 700 14px/1 var(--body); white-space: nowrap; pointer-events: none; box-shadow: 0 10px 30px -8px rgba(0,0,0,.7); transition: opacity .3s, scale .3s; }
@@ -233,7 +232,6 @@
           <span id="tally" role="status">Swipe, or tap</span>
           <button type="button" data-swipe="right">Save</button>
         </div>
-        <p class="credit" id="credit"></p>
       </div>
     </div>
   </div>
@@ -323,7 +321,7 @@
 // <slug>.mp4 and <slug>.jpg in /assets/app/deck/. Videos pause off screen and do not autoplay with reduced motion.
 (function () {
   var GAMES = [
-    ['cairn', 'Cairn', 'Shown with permission from The Game Bakers.'],
+    ['cairn', 'Cairn'],
     ['mad-max', 'Mad Max'], ['ori-and-the-blind-forest', 'Ori and the Blind Forest'], ['sleeping-dogs', 'Sleeping Dogs'],
     ['dancing-pandas', "Dancing Pandas: Ranger's Path"], ['the-eternal-cylinder', 'The Eternal Cylinder'], ['yakuza-5', 'Yakuza 5 Remastered'],
     ['grow-up', 'Grow Up'], ['call-of-juarez-bound-in-blood', 'Call of Juarez: Bound in Blood'], ['destroy-all-humans', 'Destroy All Humans!'],
@@ -331,7 +329,7 @@
   ];
   var deck = document.getElementById('deck'); if (!deck) return;
   var holders = [].slice.call(deck.querySelectorAll('figure:not(.end)')), end = deck.querySelector('figure.end');
-  var save = deck.querySelector('.stamp.save'), skip = deck.querySelector('.stamp.skip'), tally = document.getElementById('tally'), credit = document.getElementById('credit');
+  var save = deck.querySelector('.stamp.save'), skip = deck.querySelector('.stamp.skip'), tally = document.getElementById('tally');
   var soundBtn = document.getElementById('sound'), soundText = document.getElementById('soundText');
   var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var N = GAMES.length, at = 0, saved = 0, skipped = 0, busy = false, sound = false, seen = true, start = null, dx = 0, lastX = 0, lastT = 0, vx = 0;
@@ -352,7 +350,6 @@
     if (j === N) h = end; else { h = holders[0] === top ? holders[1] : holders[0]; load(h, j); }
     h.className = h === end ? 'end next' : 'next';
   }
-  function label() { credit.textContent = at < N && GAMES[at][2] ? GAMES[at][1] + '. ' + GAMES[at][2] : ''; }
   function stamps(x) { save.style.opacity = Math.max(0, Math.min(1, x / 70)); skip.style.opacity = Math.max(0, Math.min(1, -x / 70)); }
   function used() { deck.classList.add('used'); }
   function setSound(on) {
@@ -371,7 +368,7 @@
     out.style.transform = 'translateX(' + dir * deck.offsetWidth * 1.35 + 'px) rotate(' + dir * 16 + 'deg)'; out.style.opacity = '0';
     setTimeout(function () {
       out.className = out === end ? 'end' : ''; out.style.transition = out.style.transform = out.style.opacity = ''; stamps(0);
-      inn.className = inn === end ? 'end top' : 'top'; at = j; label(); setNext();
+      inn.className = inn === end ? 'end top' : 'top'; at = j; setNext();
       end.inert = at !== N; deck.classList.toggle('at-end', at === N);
       if (at === 0) { saved = skipped = 0; tally.textContent = 'Swipe, or tap'; }
       setTimeout(function () { busy = false; }, still ? 0 : 250);
@@ -414,7 +411,7 @@
   });
   soundBtn.addEventListener('click', function () { used(); fling.asked = true; setSound(!sound); });
   end.querySelector('[data-again]').addEventListener('click', function () { fling(1); });
-  load(holders[0], 0); holders[0].className = 'top'; label(); setNext(); end.inert = true;
+  load(holders[0], 0); holders[0].className = 'top'; setNext(); end.inert = true;
   if (still) { soundText.textContent = 'Tap to play'; }
   else {
     play(clip(0));
