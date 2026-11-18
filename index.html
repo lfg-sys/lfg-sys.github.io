@@ -43,12 +43,12 @@
 
   /* The phone. Its cards are real screens from the app and can be dragged, like the app. */
   .try { display: flex; flex-direction: column; align-items: center; gap: 18px; }
-  .phone { position: relative; width: min(320px, 76vw); aspect-ratio: 9 / 16.6; border-radius: 46px; padding: 11px; background: #050608;
+  .phone { position: relative; width: min(292px, 70vw); border-radius: 46px; padding: 11px; background: #050608;
            box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 50px 100px -30px rgba(0,0,0,.9), 0 0 140px -40px rgba(184,243,90,.28); }
-  .deck { position: relative; width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--bg); touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; isolation: isolate; }
+  .deck { position: relative; width: 100%; aspect-ratio: 540 / 1180; border-radius: 36px; overflow: hidden; background: var(--bg); touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; isolation: isolate; }
   .deck.dragging { cursor: grabbing; }
   .deck figure { position: absolute; inset: 0; margin: 0; opacity: 0; transform: scale(.94); transition: transform .45s var(--ease), opacity .3s; will-change: transform; }
-  .deck figure img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
+  .deck figure img, .deck figure video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
   .deck figure.top { opacity: 1; transform: none; z-index: 2; }
   .deck figure.next { opacity: 1; transform: scale(.94); z-index: 1; }
   .deck.dragging figure.top { transition: none; }
@@ -60,6 +60,7 @@
   .try-row button[data-swipe="left"]:hover { box-shadow: inset 0 0 0 1px var(--coral); color: var(--coral); }
   .try-row button[data-swipe="right"]:hover { box-shadow: inset 0 0 0 1px var(--lime); color: var(--lime); }
   .try-row span { min-width: 9.5em; text-align: center; }
+  .credit { font-size: 13px; color: var(--muted); text-align: center; margin-top: -4px; }
 
   /* ---------- Sections ---------- */
   section { padding: clamp(72px, 10vw, 150px) 0; }
@@ -190,11 +191,9 @@
 
       <div class="try">
         <div class="phone">
-          <div class="deck" id="deck" tabindex="0" role="group" aria-label="Try it: four screens from the app. Swipe right to save, left to skip, or use the arrow keys.">
-            <figure class="top"><picture><source srcset="/assets/app/discover-1.avif" type="image/avif"><source srcset="/assets/app/discover-1.webp" type="image/webp"><img src="/assets/app/discover-1.jpg" alt="A game card in the app: gameplay video on top, then the game's platforms, hours to finish, rating and the Skip and Save buttons." width="540" height="960" fetchpriority="high"></picture></figure>
-            <figure class="next"><picture><source srcset="/assets/app/game-page.avif" type="image/avif"><source srcset="/assets/app/game-page.webp" type="image/webp"><img src="/assets/app/game-page.jpg" alt="A game's page in the app, with its details and the price at each store." width="540" height="960"></picture></figure>
-            <figure><picture><source srcset="/assets/app/discover-2.avif" type="image/avif"><source srcset="/assets/app/discover-2.webp" type="image/webp"><img src="/assets/app/discover-2.jpg" alt="Another game card in the app." width="540" height="960" loading="lazy"></picture></figure>
-            <figure><picture><source srcset="/assets/app/wishlist.avif" type="image/avif"><source srcset="/assets/app/wishlist.webp" type="image/webp"><img src="/assets/app/wishlist.jpg" alt="The wishlist in the app: saved games with their prices and discounts." width="540" height="960" loading="lazy"></picture></figure>
+          <div class="deck" id="deck" tabindex="0" role="group" aria-label="Try it: a live card from the app. Swipe right to save, left to skip, or use the arrow keys.">
+            <figure class="next" aria-hidden="true"><picture><source srcset="/assets/app/cairn-poster.avif" type="image/avif"><img src="/assets/app/cairn-poster.jpg" alt="" width="540" height="1180"></picture></figure>
+            <figure class="top"><video id="clip" src="/assets/app/cairn-card.mp4" poster="/assets/app/cairn-poster.jpg" width="540" height="1180" autoplay muted loop playsinline preload="metadata" aria-label="A recording of the app: the card for the game Cairn, with its trailer playing above the game's platforms, hours to finish, rating and the Skip and Save buttons."></video></figure>
             <b class="stamp save" aria-hidden="true">Save</b>
             <b class="stamp skip" aria-hidden="true">Skip</b>
           </div>
@@ -204,6 +203,7 @@
           <span id="tally" role="status">Drag the card, or tap</span>
           <button type="button" data-swipe="right">Save</button>
         </div>
+        <p class="credit">Cairn, shown with permission from The Game Bakers.</p>
       </div>
     </div>
   </div>
@@ -286,43 +286,33 @@
 </footer>
 
 <script>
-// The phone at the top: four real screens, dealt as a deck. Drag one right to save it or left to skip it, tap Skip or
-// Save, or use the arrow keys. It deals itself slowly until the visitor touches it, then leaves them in charge.
+// The phone at the top: a real recording of one card in the app, playing. Drag it right to save or left to skip, tap
+// Skip or Save, or use the arrow keys; the card is then dealt again. One card for now: it is the only footage we have
+// permission to show. The video pauses when it is off screen, and does not play for visitors who ask for less motion.
 (function () {
   var deck = document.getElementById('deck'); if (!deck) return;
-  var cards = [].slice.call(deck.querySelectorAll('figure'));
+  var card = deck.querySelector('figure.top'), clip = document.getElementById('clip');
   var save = deck.querySelector('.stamp.save'), skip = deck.querySelector('.stamp.skip'), tally = document.getElementById('tally');
   var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var top = 0, saved = 0, skipped = 0, busy = false, touched = false, timer = null, start = null, dx = 0, lastX = 0, lastT = 0, vx = 0;
-  function layout() {
-    cards.forEach(function (c, i) {
-      c.classList.toggle('top', i === top);
-      c.classList.toggle('next', i === (top + 1) % cards.length);
-      c.style.transform = ''; c.style.opacity = '';
-    });
-    save.style.opacity = skip.style.opacity = 0;
-  }
+  var saved = 0, skipped = 0, busy = false, start = null, dx = 0, lastX = 0, lastT = 0, vx = 0;
   function stamps(x) { save.style.opacity = Math.max(0, Math.min(1, x / 70)); skip.style.opacity = Math.max(0, Math.min(1, -x / 70)); }
-  function fling(dir, byVisitor) {
+  function fling(dir) {
     if (busy) return; busy = true;
-    var c = cards[top], w = deck.offsetWidth;
     stamps(dir * 100);
-    c.style.transition = still ? 'none' : 'transform .42s cubic-bezier(.3,.1,.3,1), opacity .42s';
-    c.style.transform = 'translateX(' + dir * w * 1.35 + 'px) rotate(' + dir * 16 + 'deg)';
-    c.style.opacity = '0';
-    if (byVisitor) {
-      if (dir > 0) saved++; else skipped++;
-      tally.textContent = saved + ' saved, ' + skipped + ' skipped';
-    }
-    setTimeout(function () {
-      c.style.transition = 'none'; top = (top + 1) % cards.length; layout();
-      void c.offsetWidth; c.style.transition = ''; busy = false;
+    card.style.transition = still ? 'none' : 'transform .42s cubic-bezier(.3,.1,.3,1), opacity .42s';
+    card.style.transform = 'translateX(' + dir * deck.offsetWidth * 1.35 + 'px) rotate(' + dir * 16 + 'deg)';
+    card.style.opacity = '0';
+    if (dir > 0) saved++; else skipped++;
+    tally.textContent = saved + ' saved, ' + skipped + ' skipped';
+    setTimeout(function () {                    // deal it again: it rises from the card waiting underneath
+      card.style.transition = 'none'; card.style.transform = 'scale(.94)'; stamps(0);
+      void card.offsetWidth; card.style.transition = ''; card.style.transform = ''; card.style.opacity = '';
+      setTimeout(function () { busy = false; }, still ? 0 : 300);
     }, still ? 0 : 430);
   }
-  function mine() { touched = true; clearInterval(timer); }
   deck.addEventListener('pointerdown', function (e) {
     if (busy || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    mine(); start = { x: e.clientX, y: e.clientY, id: e.pointerId, locked: false }; dx = 0; lastX = e.clientX; lastT = e.timeStamp; vx = 0;
+    start = { x: e.clientX, y: e.clientY, id: e.pointerId, locked: false }; dx = 0; lastX = e.clientX; lastT = e.timeStamp; vx = 0;
   });
   deck.addEventListener('pointermove', function (e) {
     if (!start || e.pointerId !== start.id) return;
@@ -333,27 +323,26 @@
       start.locked = true; deck.setPointerCapture(e.pointerId); deck.classList.add('dragging');
     }
     vx = (e.clientX - lastX) / Math.max(1, e.timeStamp - lastT); lastX = e.clientX; lastT = e.timeStamp;
-    dx = x; cards[top].style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 18 + 'deg)'; stamps(dx);
+    dx = x; card.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 18 + 'deg)'; stamps(dx);
   });
   function drop() {
     if (!start) return; var was = start.locked; start = null; deck.classList.remove('dragging');
     if (!was) return;
-    if (Math.abs(dx) > deck.offsetWidth * .28 || Math.abs(vx) > .55) fling(dx > 0 || (dx === 0 && vx > 0) ? 1 : -1, true);
-    else { cards[top].style.transform = ''; stamps(0); }
+    if (Math.abs(dx) > deck.offsetWidth * .28 || Math.abs(vx) > .55) fling(dx > 0 || (dx === 0 && vx > 0) ? 1 : -1);
+    else { card.style.transform = ''; stamps(0); }
   }
   deck.addEventListener('pointerup', drop); deck.addEventListener('pointercancel', drop);
   deck.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight') { mine(); fling(1, true); e.preventDefault(); }
-    if (e.key === 'ArrowLeft') { mine(); fling(-1, true); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { fling(1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { fling(-1); e.preventDefault(); }
   });
   [].forEach.call(document.querySelectorAll('[data-swipe]'), function (b) {
-    b.addEventListener('click', function () { mine(); fling(b.dataset.swipe === 'right' ? 1 : -1, true); });
+    b.addEventListener('click', function () { fling(b.dataset.swipe === 'right' ? 1 : -1); });
   });
-  if (!still) {
-    var n = 0, seen = false;
-    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { seen = es[0].isIntersecting; }, { threshold: .5 }).observe(deck); else seen = true;
-    timer = setInterval(function () { if (!touched && seen && !document.hidden) fling(n++ % 2 ? -1 : 1, false); }, 3600);
-  }
+  if (still) { clip.removeAttribute('autoplay'); clip.pause(); clip.controls = true; }
+  else if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
+    if (es[0].isIntersecting) { var p = clip.play(); if (p && p.catch) p.catch(function () {}); } else clip.pause();
+  }, { threshold: .2 }).observe(deck);
 })();
 
 // "Join the Android test": the button turns into an email box. The address goes to Looking For Game (lfg@lfgame.co.uk gets a
