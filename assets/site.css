@@ -1,0 +1,100 @@
+/* Looking For Game: one stylesheet for every page on lfgame.co.uk.
+   Near-black ground, lime for "yes" actions only, Space Grotesk for display, Inter for reading.
+   Fonts are served from this site, so no page calls a third party before the visitor acts. */
+
+@font-face { font-family: "Space Grotesk"; src: url("/assets/fonts/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: Inter; src: url("/assets/fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+:root {
+  color-scheme: dark;
+  --bg: #0B0C10; --raised: #14161C; --line: rgba(255,255,255,.1); --line-strong: rgba(255,255,255,.22);
+  --text: #F2F3F5; --soft: #C9CDD6; --muted: #979CA8;
+  --lime: #B8F35A; --teal: #4FE3C1; --violet: #B58CFF; --coral: #FF8A7A; --ink: #0B0C10;
+  --display: "Space Grotesk", Inter, system-ui, sans-serif;
+  --body: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --gutter: max(20px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+/* Moving between pages of the site cross-fades, and the logo stays put (browsers without it just load the page). */
+@view-transition { navigation: auto; }
+.brand { view-transition-name: brand; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
+body { margin: 0; background: var(--bg); color: var(--soft); font: 400 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+h1, h2, h3, h4 { font-family: var(--display); color: var(--text); margin: 0; letter-spacing: -0.03em; text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--lime); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+img { max-width: 100%; }
+::selection { background: var(--lime); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: 100%; max-width: 1240px; margin: 0 auto; padding-inline: var(--gutter); }
+
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font: 700 19px/1 var(--display); letter-spacing: -0.03em; }
+.brand img { width: 32px; height: 32px; border-radius: 8px; display: block; }
+
+.btn, body.solo button { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px;
+  background: var(--lime); color: var(--ink); font: 650 16px/1 var(--body); text-decoration: none; cursor: pointer;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), background-color .2s; }
+.btn:hover, body.solo button:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -10px rgba(184,243,90,.55); }
+.btn:active, body.solo button:active { transform: translateY(0) scale(.98); }
+.btn.ghost, body.solo .quiet { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.btn.ghost:hover, body.solo .quiet:hover { box-shadow: inset 0 0 0 1px var(--text); }
+.btn.small { min-height: 40px; padding: 0 18px; font-size: 14.5px; }
+.btn[disabled], body.solo button[disabled] { opacity: .6; cursor: default; transform: none; box-shadow: none; }
+
+/* ---------- Reading pages: privacy, terms, delete your data ---------- */
+body.doc main { max-width: 68ch; margin: 0 auto; padding: 28px var(--gutter) 96px; }
+body.doc .logo { margin: 0 0 72px; }
+body.doc h1 { font-size: clamp(38px, 7vw, 64px); line-height: 1; letter-spacing: -0.045em; margin: 0 0 18px; }
+body.doc h2 { font-size: 22px; line-height: 1.2; margin: 52px 0 10px; padding-top: 22px; border-top: 1px solid var(--line); }
+body.doc p { margin: 0 0 14px; }
+body.doc .meta { color: var(--muted); font-size: 15px; }
+body.doc ul, body.doc ol { padding-left: 1.2em; margin: 0 0 14px; }
+body.doc li { margin-bottom: 8px; }
+body.doc li::marker { color: var(--muted); }
+body.doc strong { color: var(--text); font-weight: 600; }
+
+/* ---------- Single-purpose pages: invites, email alerts, the test sign-up ---------- */
+body.solo { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 28px var(--gutter); }
+body.solo main { width: 100%; max-width: 480px; }
+body.solo .brand { margin-bottom: 28px; }
+body.solo .card, body.solo form, body.solo .done { background: var(--raised); border: 1px solid var(--line); border-radius: 24px; padding: 32px 28px; }
+body.solo .eyebrow { font: 600 12.5px/1 var(--body); letter-spacing: .14em; color: var(--lime); margin: 0 0 14px; }
+body.solo h1 { font-size: clamp(28px, 7vw, 36px); line-height: 1.08; margin: 0 0 14px; }
+body.solo p { margin: 0 0 20px; }
+body.solo .quiet { margin-left: 8px; }
+body.solo small { display: block; margin-top: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+body.solo small a { color: var(--muted); }
+body.solo small b { color: var(--soft); font-weight: 600; }
+body.solo .box { margin: 0 0 20px; padding: 14px 16px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); font-size: 14.5px; }
+body.solo .box b { color: var(--text); }
+body.solo .code { font: 700 22px var(--display); letter-spacing: .12em; color: var(--lime); }
+/* The test sign-up page (/test/) */
+body.solo.signup { place-items: start center; padding-top: 28px; padding-bottom: 72px; }
+body.solo.signup main { max-width: 540px; }
+body.solo.signup h1 { font-size: clamp(34px, 8vw, 48px); letter-spacing: -0.04em; margin-top: 44px; }
+body.solo .lead { font-size: 18px; margin-bottom: 28px; }
+body.solo label { display: block; color: var(--text); font-weight: 600; margin-bottom: 6px; }
+body.solo .hint { color: var(--muted); font-size: 14.5px; margin: 0 0 14px; }
+body.solo input[type=email] { width: 100%; font: 17px var(--body); color: var(--text); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 14px; padding: 15px 16px; }
+body.solo input[type=email]:focus { outline: 2px solid var(--lime); outline-offset: 1px; border-color: transparent; }
+body.solo .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+body.solo form button { width: 100%; margin-top: 16px; }
+body.solo .msg { margin: 14px 0 0; font-size: 15px; min-height: 1px; }
+body.solo .msg.err { color: var(--coral); }
+body.solo .done { display: none; }
+body.solo .done h2 { font-size: 24px; margin: 0 0 8px; }
+body.solo .done p { margin: 0; }
+body.solo h3 { font-size: 19px; margin: 40px 0 10px; }
+body.solo ol { padding-left: 1.2em; margin: 0; }
+body.solo ol li { margin-bottom: 8px; }
+body.solo .small { font-size: 14px; color: var(--muted); margin-top: 28px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  @view-transition { navigation: none; }
+}
