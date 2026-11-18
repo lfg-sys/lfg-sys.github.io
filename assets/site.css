@@ -16,15 +16,16 @@
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 
-/* Big screens: the whole site is drawn larger, so a 2560-wide monitor sees what a laptop sees, not a small page in
-   a large window. --z is the scale in force; anything sized from the viewport divides by it. */
+/* Big screens: the whole site is drawn larger, so a large monitor sees what a laptop sees, not a small page in a
+   large window. The step depends on the window's height as well as its width, so an ultrawide screen is not blown up
+   past what fits. --z is the scale in force; anything sized from the viewport divides by it. */
 :root { --z: 1; }
-@media (min-width: 1900px) { :root { --z: 1.12; } }
-@media (min-width: 2100px) { :root { --z: 1.25; } }
-@media (min-width: 2300px) { :root { --z: 1.38; } }
-@media (min-width: 2500px) { :root { --z: 1.5; } }
-@media (min-width: 2900px) { :root { --z: 1.7; } }
-@media (min-width: 3400px) { :root { --z: 2; } }
+@media (min-width: 1900px) and (min-height: 965px) { :root { --z: 1.12; } }
+@media (min-width: 2100px) and (min-height: 1075px) { :root { --z: 1.25; } }
+@media (min-width: 2300px) and (min-height: 1190px) { :root { --z: 1.38; } }
+@media (min-width: 2500px) and (min-height: 1290px) { :root { --z: 1.5; } }
+@media (min-width: 2900px) and (min-height: 1460px) { :root { --z: 1.7; } }
+@media (min-width: 3400px) and (min-height: 1720px) { :root { --z: 2; } }
 html { zoom: var(--z); }
 
 /* Moving between pages of the site cross-fades, and the logo stays put (browsers without it just load the page). */

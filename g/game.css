@@ -2,15 +2,16 @@
 @font-face { font-family: "Space Grotesk"; src: url("/assets/fonts/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
 @font-face { font-family: Inter; src: url("/assets/fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 :root { color-scheme: dark; --bg:#0B0C10; --raised:#14161C; --line:rgba(255,255,255,.1); --line-strong:rgba(255,255,255,.22); --text:#F2F3F5; --soft:#C9CDD6; --muted:#979CA8; --accent:#B8F35A; }
-/* Big screens: the whole site is drawn larger, so a 2560-wide monitor sees what a laptop sees, not a small page in
-   a large window. --z is the scale in force; anything sized from the viewport divides by it. */
+/* Big screens: the whole site is drawn larger, so a large monitor sees what a laptop sees, not a small page in a
+   large window. The step depends on the window's height as well as its width, so an ultrawide screen is not blown up
+   past what fits. --z is the scale in force; anything sized from the viewport divides by it. */
 :root { --z: 1; }
-@media (min-width: 1900px) { :root { --z: 1.12; } }
-@media (min-width: 2100px) { :root { --z: 1.25; } }
-@media (min-width: 2300px) { :root { --z: 1.38; } }
-@media (min-width: 2500px) { :root { --z: 1.5; } }
-@media (min-width: 2900px) { :root { --z: 1.7; } }
-@media (min-width: 3400px) { :root { --z: 2; } }
+@media (min-width: 1900px) and (min-height: 965px) { :root { --z: 1.12; } }
+@media (min-width: 2100px) and (min-height: 1075px) { :root { --z: 1.25; } }
+@media (min-width: 2300px) and (min-height: 1190px) { :root { --z: 1.38; } }
+@media (min-width: 2500px) and (min-height: 1290px) { :root { --z: 1.5; } }
+@media (min-width: 2900px) and (min-height: 1460px) { :root { --z: 1.7; } }
+@media (min-width: 3400px) and (min-height: 1720px) { :root { --z: 2; } }
 html { zoom: var(--z); }
 @view-transition { navigation: auto; }
 * { box-sizing: border-box; }
