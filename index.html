@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <link rel="preload" href="/assets/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/site.css?v=3">
+<link rel="stylesheet" href="/assets/site.css?v=4">
 <style>
   /* ---------- Header ---------- */
   header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: saturate(160%) blur(16px); -webkit-backdrop-filter: saturate(160%) blur(16px); }
@@ -28,13 +28,12 @@
   /* ---------- Hero: the headline, and the app itself to try ---------- */
   .hero { position: relative; padding: clamp(24px, 4vw, 56px) 0 clamp(64px, 9vw, 128px); overflow: clip; }
   .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: center; gap: clamp(32px, 5vw, 80px); }
-  .status { display: inline-flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--soft); }
-  .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); animation: pulse 2.4s ease-out infinite; }
-  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(184,243,90,.5); } 100% { box-shadow: 0 0 0 12px rgba(184,243,90,0); } }
+  .status { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; color: var(--soft); }
+  .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); }
   .hero h1 { font-size: clamp(46px, 7.6vw, 116px); line-height: .92; letter-spacing: -0.055em; margin: 22px 0 28px; }
   .lead { font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; max-width: 33em; margin-bottom: 34px; }
   .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-  .note { font-size: 14.5px; color: var(--muted); margin-top: 18px; }
+  .note { font-size: 15px; color: var(--muted); margin-top: 18px; }
 
   /* The page-load moment: the headline rises once, then everything holds still until the visitor acts. */
   @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
@@ -44,7 +43,7 @@
   /* The phone. Its cards are real screens from the app and can be dragged, like the app. */
   .try { display: flex; flex-direction: column; align-items: center; gap: 18px; }
   .phone { position: relative; width: clamp(240px, min(70vw / var(--z), (100svh / var(--z) - 215px) / 2.2), 420px); border-radius: 46px; padding: 11px; background: #050608;
-           box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 50px 100px -30px rgba(0,0,0,.9), 0 0 140px -40px rgba(184,243,90,.28); }
+           box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 50px 100px -30px rgba(0,0,0,.9); }
   .deck { container-type: inline-size; position: relative; width: 100%; aspect-ratio: 540 / 1180; border-radius: 36px; overflow: hidden; background: var(--bg); touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; isolation: isolate; }
   .deck.dragging { cursor: grabbing; }
   .deck figure { position: absolute; inset: 0; margin: 0; opacity: 0; transform: scale(.94); transition: transform .45s var(--ease), opacity .3s; will-change: transform; }
@@ -55,14 +54,14 @@
   .stamp { position: absolute; z-index: 3; top: 9%; padding: 6px 14px; border-radius: 10px; font: 700 22px/1 var(--display); letter-spacing: -0.02em; opacity: 0; pointer-events: none; }
   .stamp.save { left: 7%; background: var(--lime); color: var(--ink); rotate: -8deg; }
   .stamp.skip { right: 7%; background: var(--coral); color: var(--ink); rotate: 8deg; }
-  .try-row { display: flex; align-items: center; gap: 14px; font-size: 14.5px; color: var(--muted); min-height: 40px; }
-  .try-row button { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: transparent; color: var(--text); font: 600 14.5px var(--body); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line-strong); transition: box-shadow .15s, color .15s; }
+  .try-row { display: flex; align-items: center; gap: 14px; font-size: 15px; color: var(--muted); min-height: 40px; }
+  .try-row button { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: transparent; color: var(--text); font: 600 15px var(--body); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line-strong); transition: box-shadow .15s, color .15s; }
   .try-row button[data-swipe="left"]:hover { box-shadow: inset 0 0 0 1px var(--coral); color: var(--coral); }
   .try-row button[data-swipe="right"]:hover { box-shadow: inset 0 0 0 1px var(--lime); color: var(--lime); }
   .try-row span { min-width: 9.5em; text-align: center; }
   /* The marker that says the phone is live: a pill on the card, and the card leans left and right until it is touched. */
   .hint { position: absolute; z-index: 4; left: 50%; top: 20.5%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: var(--lime); color: var(--ink);
-          font: 700 14px/1 var(--body); white-space: nowrap; pointer-events: none; box-shadow: 0 10px 30px -8px rgba(0,0,0,.7); transition: opacity .3s, scale .3s; }
+          font: 700 15px/1 var(--body); white-space: nowrap; pointer-events: none; box-shadow: 0 10px 30px -8px rgba(0,0,0,.7); transition: opacity .3s, scale .3s; }
   .hint svg { width: 14px; height: 14px; }
   .hint svg:first-child { animation: nudgeL 1.4s ease-in-out infinite; } .hint svg:last-child { animation: nudgeR 1.4s ease-in-out infinite; }
   @keyframes nudgeL { 50% { transform: translateX(-4px); } } @keyframes nudgeR { 50% { transform: translateX(4px); } }
@@ -71,7 +70,7 @@
   .deck:not(.used) figure.top { animation: lean 4.2s var(--ease) 1.6s infinite; }
   /* Sound: off until the visitor touches the phone (browsers do not allow a page to start with sound). */
   .sound { position: absolute; z-index: 5; right: 5%; top: 7%; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 11px; border: 0; border-radius: 999px; background: rgba(11,12,16,.78); color: var(--text);
-           font: 600 12.5px/1 var(--body); cursor: pointer; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+           font: 600 13px/1 var(--body); cursor: pointer; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
   .sound svg { width: 15px; height: 15px; }
   .sound .on, .sound.live .off { display: none; } .sound.live .on { display: block; }
   .sound.live { color: var(--lime); }
@@ -79,9 +78,9 @@
   /* The card after the last game. */
   .deck figure.end { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 14px; padding: 9%; background: var(--raised); box-shadow: inset 0 0 0 1px var(--line); border-radius: 36px; }
   .end h3 { font-size: clamp(26px, 8.4cqw, 34px); line-height: 1; letter-spacing: -0.04em; }
-  .end p { font-size: 15.5px; line-height: 1.45; }
+  .end p { font-size: 15px; line-height: 1.45; }
   .end .btn { min-height: 46px; padding: 0 20px; font-size: 15px; }
-  .end .again { background: none; border: 0; padding: 6px 0; color: var(--soft); font: 600 14.5px var(--body); text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
+  .end .again { background: none; border: 0; padding: 6px 0; color: var(--soft); font: 600 15px var(--body); text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
 
   /* ---------- Sections ---------- */
   section { padding: clamp(72px, 10vw, 150px) 0; }
@@ -107,10 +106,22 @@
 
   /* Features: six plain facts on a ruled grid. No icons, nothing to decode. */
   .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--line); }
-  .features div { padding: 30px 32px 38px 0; border-bottom: 1px solid var(--line); }
-  .features div:not(:nth-child(3n+1)) { padding-left: 32px; border-left: 1px solid var(--line); }
+  /* Five facts: the best price leads across two columns with the app's own price list beside it, then four compact ones. */
+  .features > div { padding: 32px 32px 40px 0; border-bottom: 1px solid var(--line); }
+  .features > div:nth-child(2), .features > div:nth-child(4), .features > div:nth-child(5) { padding-left: 32px; border-left: 1px solid var(--line); }
+  .features .first { grid-column: span 2; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .features .first dt { font-size: 32px; }
+  .stores { margin: 0; padding: 0; list-style: none; border-radius: 16px; overflow: hidden; background: var(--raised); box-shadow: inset 0 0 0 1px var(--line); font: 600 17px/1.2 var(--body); color: var(--text); }
+  .stores li { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 56px; padding: 8px 20px; font-variant-numeric: tabular-nums; }
+  .stores li + li { box-shadow: inset 0 1px 0 var(--line); }
+  .stores span:first-child { display: grid; gap: 2px; }
+  .stores b { font-weight: 600; }
+  .stores small { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .stores .best { color: var(--lime); }
+  .stores .yours { background: var(--lime); color: var(--ink); }
+  .stores .yours small { color: #1c2410; }
   .features dt { font: 700 23px/1.15 var(--display); letter-spacing: -0.03em; color: var(--text); margin-bottom: 10px; }
-  .features dd { margin: 0; font-size: 16px; max-width: 24em; }
+  .features dd { margin: 0; font-size: 17px; max-width: 24em; }
 
   /* For developers / Your privacy */
   .pair { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
@@ -130,14 +141,14 @@
   .talk[hidden] { display: none; }
   .talk > p b { color: var(--text); font-weight: 600; user-select: all; }
   .talk form { display: grid; gap: 8px; }
-  .talk label { font-size: 14.5px; font-weight: 600; color: var(--text); margin-top: 8px; }
-  .talk input, .talk textarea { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--raised); color: var(--text); font: 16px/1.5 var(--body); }
+  .talk label { font-size: 15px; font-weight: 600; color: var(--text); margin-top: 8px; }
+  .talk input, .talk textarea { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--raised); color: var(--text); font: 17px/1.5 var(--body); }
   .talk textarea { resize: vertical; min-height: 130px; }
   .talk input:focus-visible, .talk textarea:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; border-color: transparent; }
   .talk .bad { border-color: var(--coral); }
   .talk .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   .talk button { justify-self: start; margin-top: 14px; border: 0; }
-  .talk-note { font-size: 14px; color: var(--muted); }
+  .talk-note { font-size: 15px; color: var(--muted); }
   .talk-note.err { color: var(--coral); }
   .talk-done { padding: 16px 20px; border: 1px solid rgba(184,243,90,.45); border-radius: 18px; background: rgba(184,243,90,.08); color: var(--text); }
 
@@ -147,29 +158,28 @@
   .join h2 { color: var(--ink); font-size: clamp(38px, 6.6vw, 100px); line-height: .92; letter-spacing: -0.055em; max-width: 11em; }
   .join p { font-size: clamp(17px, 1.5vw, 20px); max-width: 32em; color: #1c2410; }
   .join .btn { background: var(--ink); color: var(--lime); }
-  .join .btn:hover { box-shadow: 0 14px 30px -12px rgba(11,12,16,.6); }
   .join :focus-visible { outline-color: var(--ink); }
   .join ::selection { background: var(--ink); color: var(--lime); }
 
   /* "Join the Android test": the button turns into a small form. */
   .join-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; width: 100%; max-width: 520px; }
-  .join-form input { flex: 1 1 220px; min-width: 0; min-height: 52px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--raised); color: var(--text); font: 16px var(--body); }
+  .join-form input { flex: 1 1 220px; min-width: 0; min-height: 52px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--raised); color: var(--text); font: 17px var(--body); }
   .join-form input::placeholder { color: var(--muted); }
   .join-form button { border: 0; }
-  .join-note { flex-basis: 100%; margin: 0; font-size: 14px; color: var(--muted); max-width: none; }
+  .join-note { flex-basis: 100%; margin: 0; font-size: 15px; color: var(--muted); max-width: none; }
   .join-note.err { color: var(--coral); }
-  .join-done { margin: 0; padding: 16px 20px; border: 1px solid rgba(184,243,90,.45); border-radius: 18px; background: rgba(184,243,90,.08); color: var(--text); max-width: 520px; font-size: 16px; }
+  .join-done { margin: 0; padding: 16px 20px; border: 1px solid rgba(184,243,90,.45); border-radius: 18px; background: rgba(184,243,90,.08); color: var(--text); max-width: 520px; font-size: 17px; }
   .join .join-form input { background: var(--ink); border-color: var(--ink); }
-  .join .join-note, .join .join-note.err { color: #1c2410; font-size: 14.5px; }
+  .join .join-note, .join .join-note.err { color: #1c2410; font-size: 15px; }
   .join .join-note.err { font-weight: 600; }
   .join .join-note a { color: var(--ink); }
   .join .join-done { background: var(--ink); border-color: var(--ink); color: var(--text); }
 
   /* ---------- Footer ---------- */
-  footer { padding: 8px 0 56px; font-size: 14.5px; color: var(--muted); }
+  footer { padding: 8px 0 56px; font-size: 15px; color: var(--muted); }
   .foot { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); gap: 32px; }
   .foot p { margin-top: 14px; }
-  .foot h4 { font: 600 14.5px var(--body); letter-spacing: 0; margin-bottom: 12px; }
+  .foot h4 { font: 600 15px var(--body); letter-spacing: 0; margin-bottom: 12px; }
   .foot ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
   .foot ul a { color: var(--soft); text-decoration: none; }
   .foot ul a:hover { color: var(--text); text-decoration: underline; }
@@ -184,7 +194,7 @@
      --top (where it holds) and --p (how far it is covered, 0 to 1). Off for reduced motion and without JavaScript. */
   .mark { display: block; height: 0; }
   .links a:not(.btn)[aria-current] { color: var(--text); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .5em; }
-  .mute { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--text); font: 600 14.5px var(--body); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .mute { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--text); font: 600 15px var(--body); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line-strong); }
   .mute[hidden] { display: none; }
   .mute svg { width: 15px; height: 15px; }
   html.stack { scroll-padding-top: 68px; }
@@ -210,8 +220,9 @@
     .step { grid-template-columns: 1fr; gap: 16px; align-items: start; }
     .step h3 { font-size: clamp(72px, 22vw, 180px); }
     .features { grid-template-columns: 1fr 1fr; }
-    .features div:nth-child(n) { padding: 26px 22px 30px 0; border-left: 0; }
-    .features div:nth-child(even) { padding-left: 22px; padding-right: 0; border-left: 1px solid var(--line); }
+    .features > div:nth-child(n) { padding: 28px 24px 32px 0; border-left: 0; }
+    .features > div:nth-child(odd):not(.first) { padding-left: 24px; padding-right: 0; border-left: 1px solid var(--line); }
+    .features .first { padding-right: 0; }
     .pair { grid-template-columns: 1fr; }
     .pair > div { padding: 40px 0 0; }
     .pair > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 48px; }
@@ -220,7 +231,9 @@
   }
   @media (max-width: 560px) {
     .features { grid-template-columns: 1fr; }
-    .features div:nth-child(n) { padding: 24px 0 28px; border-left: 0; }
+    .features > div:nth-child(n), .features > div:nth-child(odd):not(.first) { padding: 24px 0 28px; border-left: 0; }
+    .features .first { grid-column: auto; grid-template-columns: 1fr; gap: 20px; }
+    .features .first dt { font-size: 26px; }
     .hero .ctas .btn { flex: 1 1 auto; }
   }
 </style>
@@ -287,7 +300,7 @@
   <span class="mark" id="how"></span>
   <section class="sheet">
     <div class="wrap">
-      <div class="sec-head"><p class="label">How it works</p><h2>Three seconds to know if a game is for you.</h2><p>Store pages and trailers show a game at its best. Looking For Game shows you what playing it is actually like.</p></div>
+      <div class="sec-head"><p class="label">How it works</p><h2>Three seconds to know if a game is for you</h2><p>Store pages and trailers show a game at its best. Looking For Game shows you what playing it is actually like.</p></div>
       <div class="steps">
         <div class="step swipe"><h3>Swipe.</h3><p>Flick through a deck of games. Skip it or save it: each choice shapes the rest of your deck, so the more you swipe, the better it gets.</p></div>
         <div class="step watch"><h3>Watch.</h3><p>Every card opens with real gameplay ready to go, so you see the game being played rather than a sales pitch.</p></div>
@@ -299,14 +312,19 @@
   <span class="mark" id="features"></span>
   <section class="sheet">
     <div class="wrap">
-      <div class="sec-head"><p class="label">Features</p><h2>Built for people who'd rather play than scroll.</h2></div>
+      <div class="sec-head"><p class="label">Features</p><h2>Built for people who'd rather play than scroll</h2></div>
       <dl class="features">
-        <div><dt>Gameplay first</dt><dd>Videos of people actually playing the game, with trailers there too.</dd></div>
+        <div class="first"><div><dt>The best price</dt><dd>Prices from the stores you use, in your currency, with sales flagged so you know when to buy.</dd></div>
+          <ul class="stores" aria-label="An example of the price list on a game's page">
+            <li class="yours"><span><b>Steam</b><small>Your store</small></span><span>£16.75</span></li>
+            <li><span><b>Fanatical</b><small class="best">Best price · not an official store</small></span><span>£14.32</span></li>
+            <li><span><b>Xbox</b></span><span>£16.74</span></li>
+            <li><span><b>Nintendo</b></span><span>£8.37</span></li>
+          </ul></div>
         <div><dt>Only what you can play</dt><dd>Pick your platforms, genres, price and play time. Your deck only shows games that fit.</dd></div>
-        <div><dt>The best price</dt><dd>Prices from the stores you use, in your currency, with sales flagged so you know when to buy.</dd></div>
         <div><dt>A wishlist that follows you</dt><dd>Your saved games stay on your phone. Sign in with Google if you'd like them back on a new one.</dd></div>
+        <div><dt>Sale and release alerts</dt><dd>We tell you when a game you saved drops by 20% or more, hits its lowest price, or comes out.</dd></div>
         <div><dt>Coming soon</dt><dd>Upcoming games with their release dates, so the ones you're waiting for don't pass you by.</dd></div>
-        <div><dt>Your data, your choice</dt><dd>No account needed, and usage data is only shared if you turn it on.</dd></div>
       </dl>
     </div>
   </section>
@@ -317,7 +335,7 @@
       <div class="pair">
         <div>
           <p class="label">For game developers</p>
-          <h3>Put your game in front of players who want it.</h3>
+          <h3>Put your game in front of players who want it</h3>
           <p>Looking For Game is built around watching games being played. If you'd like to talk about featuring your game, we'd love to hear from you.</p>
           <a class="btn ghost" href="#talk" data-talk aria-expanded="false" aria-controls="talk">Talk to us</a>
           <div class="talk" id="talk" hidden>
@@ -337,7 +355,7 @@
         </div>
         <div>
           <p class="label">Your privacy</p>
-          <h3>Your deck, your data.</h3>
+          <h3>Your deck, your data</h3>
           <p>Looking For Game works without an account. What you save lives on your phone unless you choose to sign in.</p>
           <ul>
             <li>No account needed to swipe and save</li>
@@ -354,7 +372,7 @@
   <section class="join sheet" id="join">
     <div class="wrap">
       <div class="panel">
-        <h2>Be one of the first to try Looking For Game.</h2>
+        <h2>Be one of the first to try Looking For Game</h2>
         <p>Looking For Game is in closed testing on Android. Leave the email address of your Google Play account and we'll add you to the test.</p>
         <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
       </div>

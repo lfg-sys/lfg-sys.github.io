@@ -7,13 +7,13 @@
 <title>Email alerts · Looking For Game</title>
 <meta name="theme-color" content="#0B0C10">
 <link rel="icon" href="/assets/favicon.png">
-<link rel="stylesheet" href="/assets/site.css?v=3">
+<link rel="stylesheet" href="/assets/site.css?v=4">
 </head>
 <body class="solo">
 <main>
   <a class="brand" href="/"><img src="/assets/icon-96.png" alt="" width="32" height="32">Looking For Game</a>
   <div class="card" aria-live="polite">
-    <p class="eyebrow" id="eyebrow">EMAIL ALERTS</p>
+    <p class="eyebrow" id="eyebrow">Email alerts</p>
     <h1 id="title">One moment…</h1>
     <p id="text"></p>
     <div id="actions"></div>
@@ -33,26 +33,26 @@
     return fetch(API + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify({ p_token: token }) })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }
-  var problem = function () { show('SOMETHING WENT WRONG', "That didn't work.", 'Check your connection and open the link from the email again. If it keeps happening, email lfg@lfgame.co.uk.'); };
+  var problem = function () { show('Something went wrong', "That didn't work.", 'Check your connection and open the link from the email again. If it keeps happening, email lfg@lfgame.co.uk.'); };
   var c = q.get('confirm'), u = q.get('unsubscribe');
   if (c && UUID.test(c)) {
     call('alerts_email_confirm', c).then(function (r) {
-      if (r === 'confirmed') show('QUEST COMPLETE', "You're in. Email alerts are on.", "We'll email you when a game on your wishlist drops in price, hits its lowest price yet, or comes out.");
-      else if (r === 'expired') show('LINK EXPIRED', 'This link is more than 7 days old.', 'Open Looking For Game, go to You, then Alerts, and press "Send the link again".');
-      else show('LINK NOT FOUND', "This link isn't in use any more.", 'The email address may have been changed or removed. Open Looking For Game, go to You, then Alerts, to check.');
+      if (r === 'confirmed') show('Quest complete', "You're in. Email alerts are on.", "We'll email you when a game on your wishlist drops in price, hits its lowest price yet, or comes out.");
+      else if (r === 'expired') show('Link expired', 'This link is more than 7 days old.', 'Open Looking For Game, go to You, then Alerts, and press "Send the link again".');
+      else show('Link not found', "This link isn't in use any more.", 'The email address may have been changed or removed. Open Looking For Game, go to You, then Alerts, to check.');
     }).catch(problem);
   } else if (u && UUID.test(u)) {
-    show('EMAIL ALERTS', 'Stop the emails?', "We'll remove your email address straight away. Alerts on your phone carry on unless you turn them off in the app.");
+    show('Email alerts', 'Stop the emails?', "We'll remove your email address straight away. Alerts on your phone carry on unless you turn them off in the app.");
     var b = document.createElement('button'); b.textContent = 'Unsubscribe';
     b.onclick = function () {
       b.disabled = true;
       call('alerts_email_unsubscribe', u).then(function () {
-        show('DONE', "You're unsubscribed.", 'Your email address has been removed and no more emails will come. Changed your mind? Open Looking For Game, go to You, then Alerts, and press "Email me" to turn them back on.');
+        show('Done', "You're unsubscribed.", 'Your email address has been removed and no more emails will come. Changed your mind? Open Looking For Game, go to You, then Alerts, and press "Email me" to turn them back on.');
       }).catch(problem);
     };
     $('actions').appendChild(b);
   } else {
-    show('EMAIL ALERTS', 'Open the link from your email.', 'This page confirms or stops Looking For Game email alerts using the link in the email we sent you.');
+    show('Email alerts', 'Open the link from your email.', 'This page confirms or stops Looking For Game email alerts using the link in the email we sent you.');
   }
 })();
 </script>

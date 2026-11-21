@@ -44,17 +44,17 @@ img { max-width: 100%; }
 
 .wrap { width: 100%; max-width: 1240px; margin: 0 auto; padding-inline: var(--gutter); }
 
-.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font: 700 19px/1 var(--display); letter-spacing: -0.03em; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font: 700 20px/1 var(--display); letter-spacing: -0.03em; }
 .brand img { width: 32px; height: 32px; border-radius: 8px; display: block; }
 
 .btn, body.solo button { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px;
-  background: var(--lime); color: var(--ink); font: 650 16px/1 var(--body); text-decoration: none; cursor: pointer;
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease), background-color .2s; }
-.btn:hover, body.solo button:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -10px rgba(184,243,90,.55); }
+  background: var(--lime); color: var(--ink); font: 650 17px/1 var(--body); text-decoration: none; cursor: pointer;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s; }
+.btn:hover, body.solo button:hover { filter: brightness(1.08); }
 .btn:active, body.solo button:active { transform: translateY(0) scale(.98); }
 .btn.ghost, body.solo .quiet { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
 .btn.ghost:hover, body.solo .quiet:hover { box-shadow: inset 0 0 0 1px var(--text); }
-.btn.small { min-height: 40px; padding: 0 18px; font-size: 14.5px; }
+.btn.small { min-height: 40px; padding: 0 18px; font-size: 15px; }
 .btn[disabled], body.solo button[disabled] { opacity: .6; cursor: default; transform: none; box-shadow: none; }
 
 /* ---------- Reading pages: privacy, terms, delete your data ---------- */
@@ -74,23 +74,23 @@ body.solo { min-height: calc(100vh / var(--z)); min-height: calc(100dvh / var(--
 body.solo main { width: 100%; max-width: 480px; }
 body.solo .brand { margin-bottom: 28px; }
 body.solo .card, body.solo form, body.solo .done { background: var(--raised); border: 1px solid var(--line); border-radius: 24px; padding: 32px 28px; }
-body.solo .eyebrow { font: 600 12.5px/1 var(--body); letter-spacing: .14em; color: var(--lime); margin: 0 0 14px; }
+body.solo .eyebrow { font: 600 13px/1 var(--body); color: var(--lime); margin: 0 0 14px; }
 body.solo h1 { font-size: clamp(28px, 7vw, 36px); line-height: 1.08; margin: 0 0 14px; }
 body.solo p { margin: 0 0 20px; }
 body.solo .quiet { margin-left: 8px; }
-body.solo small { display: block; margin-top: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+body.solo small { display: block; margin-top: 18px; color: var(--muted); font-size: 13px; line-height: 1.55; }
 body.solo small a { color: var(--muted); }
 body.solo small b { color: var(--soft); font-weight: 600; }
-body.solo .box { margin: 0 0 20px; padding: 14px 16px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); font-size: 14.5px; }
+body.solo .box { margin: 0 0 20px; padding: 14px 16px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); font-size: 15px; }
 body.solo .box b { color: var(--text); }
 body.solo .code { font: 700 22px var(--display); letter-spacing: .12em; color: var(--lime); }
 /* The test sign-up page (/test/) */
 body.solo.signup { place-items: start center; padding-top: 28px; padding-bottom: 72px; }
 body.solo.signup main { max-width: 540px; }
 body.solo.signup h1 { font-size: clamp(34px, 8vw, 48px); letter-spacing: -0.04em; margin-top: 44px; }
-body.solo .lead { font-size: 18px; margin-bottom: 28px; }
+body.solo .lead { font-size: 17px; margin-bottom: 28px; }
 body.solo label { display: block; color: var(--text); font-weight: 600; margin-bottom: 6px; }
-body.solo .hint { color: var(--muted); font-size: 14.5px; margin: 0 0 14px; }
+body.solo .hint { color: var(--muted); font-size: 15px; margin: 0 0 14px; }
 body.solo input[type=email] { width: 100%; font: 17px var(--body); color: var(--text); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 14px; padding: 15px 16px; }
 body.solo input[type=email]:focus { outline: 2px solid var(--lime); outline-offset: 1px; border-color: transparent; }
 body.solo .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
@@ -100,10 +100,10 @@ body.solo .msg.err { color: var(--coral); }
 body.solo .done { display: none; }
 body.solo .done h2 { font-size: 24px; margin: 0 0 8px; }
 body.solo .done p { margin: 0; }
-body.solo h3 { font-size: 19px; margin: 40px 0 10px; }
+body.solo h3 { font-size: 20px; margin: 40px 0 10px; }
 body.solo ol { padding-left: 1.2em; margin: 0; }
 body.solo ol li { margin-bottom: 8px; }
-body.solo .small { font-size: 14px; color: var(--muted); margin-top: 28px; }
+body.solo .small { font-size: 15px; color: var(--muted); margin-top: 28px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
