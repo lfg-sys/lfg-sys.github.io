@@ -176,6 +176,33 @@
   .legal { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 13px; line-height: 1.55; max-width: 90ch; }
   .legal a { color: inherit; }
 
+  /* ---------- Moving between sections ----------
+     Each section holds still when its end reaches the bottom of the window, and the next one arrives during the one
+     window of scrolling that follows. The page is no longer than before: nothing is pinned for extra scrolling.
+     The section left behind drops back to the size of the "next" card in the phone (.94) and dims, and the next
+     slides up over it. The script at the bottom of the page switches this on (html.stack) and sets, on each section,
+     --top (where it holds) and --p (how far it is covered, 0 to 1). Off for reduced motion and without JavaScript. */
+  .mark { display: block; height: 0; }
+  .links a:not(.btn)[aria-current] { color: var(--text); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .5em; }
+  .mute { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--text); font: 600 14.5px var(--body); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .mute[hidden] { display: none; }
+  .mute svg { width: 15px; height: 15px; }
+  html.stack { scroll-padding-top: 68px; }
+  html.stack body { background: #050608; }
+  html.stack footer { background: var(--bg); padding-top: 28px; }
+  html.stack .join { padding-top: clamp(20px, 3vw, 44px); }
+  html.stack .sheet { --sheet-r: clamp(22px, 3vw, 44px); position: sticky; top: var(--top, 0px); isolation: isolate; background: var(--bg); transform-origin: 50% var(--oy, 40%); transform: scale(calc(1 - var(--p, 0) * .06)); }
+  html.stack .sheet::after { content: ""; position: absolute; inset: 0; z-index: 30; border-radius: inherit; background: #050608; opacity: calc(var(--p, 0) * .72); pointer-events: none; }
+  html.stack .sheet.under { will-change: transform; border-radius: var(--sheet-r); }
+  html.stack .sheet ~ .sheet { border-radius: var(--sheet-r) var(--sheet-r) 0 0; box-shadow: 0 -1px 0 var(--line-strong), 0 -44px 90px -34px rgba(0,0,0,.95); }
+  html.stack .sheet.under ~ .sheet.under { border-radius: var(--sheet-r); }
+
+  @supports (animation-timeline: view()) {
+    /* A held section stops moving, so the three words must finish lighting before the section comes to rest. */
+    html.stack .step h3 { animation-range: entry 30% cover 12%; }
+    html.stack .step p { animation-range: entry 40% cover 10%; }
+  }
+
   @media (max-width: 900px) {
     .links a:not(.btn) { display: none; }
     .hero .wrap { grid-template-columns: 1fr; gap: 56px; }
@@ -210,13 +237,15 @@
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
       <a href="#developers">For developers</a>
+      <button class="mute" type="button" id="mute" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6v4h2.5L8 13V3L4.5 6z" fill="currentColor"/><path d="M10.8 5.6a3.4 3.4 0 0 1 0 4.8M12.8 3.8a6 6 0 0 1 0 8.4"/></svg>Mute</button>
       <a class="btn small" href="#join" data-join-jump>Join the test</a>
     </nav>
   </div>
 </header>
 
 <main>
-  <div class="hero">
+  <span class="mark"></span>
+  <div class="hero sheet">
     <div class="wrap">
       <div>
         <span class="status"><i></i>In testing on Android · iPhone to follow</span>
@@ -255,7 +284,8 @@
     </div>
   </div>
 
-  <section id="how">
+  <span class="mark" id="how"></span>
+  <section class="sheet">
     <div class="wrap">
       <div class="sec-head"><p class="label">How it works</p><h2>Three seconds to know if a game is for you.</h2><p>Store pages and trailers show a game at its best. Looking For Game shows you what playing it is actually like.</p></div>
       <div class="steps">
@@ -266,7 +296,8 @@
     </div>
   </section>
 
-  <section id="features">
+  <span class="mark" id="features"></span>
+  <section class="sheet">
     <div class="wrap">
       <div class="sec-head"><p class="label">Features</p><h2>Built for people who'd rather play than scroll.</h2></div>
       <dl class="features">
@@ -280,7 +311,8 @@
     </div>
   </section>
 
-  <section id="developers">
+  <span class="mark" id="developers"></span>
+  <section class="sheet">
     <div class="wrap">
       <div class="pair">
         <div>
@@ -318,7 +350,8 @@
     </div>
   </section>
 
-  <section class="join" id="join">
+  <span class="mark"></span>
+  <section class="join sheet" id="join">
     <div class="wrap">
       <div class="panel">
         <h2>Be one of the first to try Looking For Game.</h2>
@@ -365,7 +398,7 @@
   var save = deck.querySelector('.stamp.save'), skip = deck.querySelector('.stamp.skip'), tally = document.getElementById('tally');
   var soundBtn = document.getElementById('sound'), soundText = document.getElementById('soundText');
   var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var N = GAMES.length, at = 0, saved = 0, skipped = 0, busy = false, sound = false, seen = true, start = null, dx = 0, lastX = 0, lastT = 0, vx = 0;
+  var N = GAMES.length, at = 0, saved = 0, skipped = 0, busy = false, sound = false, seen = true, covered = false, start = null, dx = 0, lastX = 0, lastT = 0, vx = 0;
   var BASE = '/assets/app/deck/';
   function el(i) { return i === N ? end : holders.filter(function (h) { return +h.dataset.i === i; })[0]; }
   function load(h, i) {
@@ -450,8 +483,14 @@
     play(clip(0));
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
       seen = es[0].isIntersecting; var v = clip(at); if (!v) return;
-      if (seen) play(v); else v.pause();
+      if (seen && !(covered && !sound)) play(v); else v.pause();
     }, { threshold: .2 }).observe(deck);
+    // The next section has slid over the phone (see "The page as a deck"). With sound on, the game keeps playing
+    // underneath and the header shows a Mute button; with sound off there is nothing to hear or see, so it pauses.
+    deck.addEventListener('covered', function (e) {
+      covered = e.detail; var v = clip(at); if (!v) return;
+      if (seen && !(covered && !sound)) play(v); else v.pause();
+    });
   }
 })();
 
@@ -534,6 +573,63 @@
         say("That didn't send. Check your connection and try again, or email lfg@lfgame.co.uk.", true);
       });
   });
+})();
+
+// Moving between sections: each section holds at the end of its content while the next one slides over it. This sets
+// where each section holds (--top) and how far it is covered (--p), marks the header link for the section in view, and
+// shows Mute in the header while the phone is covered with its sound on. Off for reduced motion.
+(function () {
+  var sheets = [].slice.call(document.querySelectorAll('.sheet')), n = sheets.length;
+  if (n < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var root = document.documentElement, head = document.querySelector('header'), deck = document.getElementById('deck'), links = {}, queued = false, hid = null, current = -1;
+  var mute = document.getElementById('mute'), snd = document.getElementById('sound');
+  var marks = sheets.map(function (s) { return s.previousElementSibling; });          // an unmoving marker sits before each section
+  var names = marks.map(function (m, i) { return m.id || sheets[i].id; });
+  [].forEach.call(document.querySelectorAll('.links a:not(.btn)'), function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  root.classList.add('stack');
+  function zoom() { return head.getBoundingClientRect().width / head.offsetWidth || 1; }
+  function measure() {                          // where each section holds: under the header, or with its last line at the bottom of the window
+    var z = zoom(), view = innerHeight / z, bar = head.offsetHeight;
+    sheets.forEach(function (s, i) {
+      if (i === n - 1) return;
+      var top = Math.min(bar, view - s.offsetHeight);
+      s.style.setProperty('--top', top + 'px'); s.style.setProperty('--oy', (view * .4 - top) + 'px');
+    });
+    paint();
+  }
+  function paint() {
+    queued = false;
+    var H = innerHeight, bar = head.getBoundingClientRect().height, here = 0, first = 0;
+    for (var i = 0; i < n; i++) {
+      var t = marks[i].getBoundingClientRect().top;
+      if (t < H * .5) here = i;
+      if (!i) continue;
+      var p = Math.max(0, Math.min(1, (H - t) / (H - bar))), out = sheets[i - 1];
+      if (i === 1) first = p;
+      out.style.setProperty('--p', p.toFixed(4)); out.classList.toggle('under', p > 0);
+    }
+    if (here !== current) {
+      if (links[names[current]]) links[names[current]].removeAttribute('aria-current');
+      if (links[names[here]]) links[names[here]].setAttribute('aria-current', 'true');
+      current = here;
+    }
+    if (deck) {
+      var gone = first > .6;
+      if (gone !== hid) { hid = gone; deck.dispatchEvent(new CustomEvent('covered', { detail: gone })); mute.hidden = !(gone && snd.classList.contains('live')); }
+    }
+  }
+  mute.addEventListener('click', function () { snd.click(); mute.hidden = true; });
+  function queue() { if (!queued) { queued = true; requestAnimationFrame(paint); } }
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', measure);
+  if ('ResizeObserver' in window) { var ro = new ResizeObserver(measure); sheets.forEach(function (s) { ro.observe(s); }); }
+  // Keyboard: a link or field in a section that has been left is brought back into view when it takes focus.
+  document.addEventListener('focusin', function (e) {
+    var s = e.target.closest('.sheet'), i = sheets.indexOf(s); if (i < 0 || !s.classList.contains('under')) return;
+    for (var y = 0, el = e.target; el && el !== s; el = el.offsetParent) y += el.offsetTop;
+    scrollBy({ top: marks[i].getBoundingClientRect().top / zoom() + y - innerHeight / zoom() * .35, behavior: 'instant' });
+  });
+  measure();
 })();
 </script>
 </body>
