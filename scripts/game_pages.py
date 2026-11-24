@@ -3,6 +3,14 @@
 Run nightly by .github/workflows/game-pages.yml. Pages only change when the game's details change, so a night
 with no changes commits nothing. Prices are left off on purpose: they change daily and live in the app.
 Pages for games that leave the catalogue are kept, so a link someone shared keeps working.
+
+It also writes /sitemap.xml and /robots.txt (24 Nov 2026). Nothing on the site links to the game pages, so the sitemap
+is how search engines find them. It lists the home page, the privacy and terms pages, and one line per game that is in
+the catalogue tonight; a kept page for a game that has left the catalogue is not listed. No dates are given, because a
+page's date would change nightly for no reason. One sitemap file holds up to 50,000 addresses; the script stops rather
+than write a bigger one.
+The page title leads with the game's name, then what the page shows (Matthew, 24 Nov 2026). It does not say "price":
+the page shows none.
 """
 import html, json, os, re, sys, urllib.request
 
@@ -71,7 +79,7 @@ def page(g):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{e(title)}: gameplay and where to get it · Looking For Game</title>
+<title>{e(title)}: gameplay and where to buy · Looking For Game</title>
 <meta name="description" content="{meta_desc}">
 <link rel="canonical" href="{SITE}/g/{e(gid)}/">
 <meta property="og:title" content="{e(title)}">
@@ -137,13 +145,14 @@ def main():
             sys.exit(f'Could not download the catalogue: {problem}')
     if len(games) < 1000:
         sys.exit(f'Only {len(games)} games in the catalogue: not touching the pages.')
-    changed = 0
+    changed, listed = 0, []
     for g in games:
         gid = g.get('id') or ''
         if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,250}', gid):
             continue
         d = os.path.join(ROOT, 'g', gid)
         p = os.path.join(d, 'index.html')
+        listed.append(gid)
         new = page(g)
         try:
             if open(p, encoding='utf-8').read() == new:
@@ -153,7 +162,23 @@ def main():
         os.makedirs(d, exist_ok=True)
         open(p, 'w', encoding='utf-8').write(new)
         changed += 1
-    print(f'{len(games)} games, {changed} pages written')
+    listed.sort()
+    urls = [SITE + '/', SITE + '/privacy/', SITE + '/terms/'] + [f'{SITE}/g/{gid}/' for gid in listed]
+    if len(urls) > 50000:
+        sys.exit(f'{len(urls)} addresses: more than one sitemap file can hold. Split it before going on.')
+    sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+               + ''.join(f'<url><loc>{e(u)}</loc></url>\n' for u in urls) + '</urlset>\n')
+    robots = f'User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n'
+    for name, text in (('sitemap.xml', sitemap), ('robots.txt', robots)):
+        path = os.path.join(ROOT, name)
+        try:
+            if open(path, encoding='utf-8').read() == text:
+                continue
+        except FileNotFoundError:
+            pass
+        open(path, 'w', encoding='utf-8', newline='\n').write(text)
+        print(name, 'written')
+    print(f'{len(games)} games, {changed} pages written, {len(urls)} addresses in the sitemap')
 
 
 if __name__ == '__main__':
