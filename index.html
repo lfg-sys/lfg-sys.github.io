@@ -33,6 +33,8 @@
   .hero h1 { font-size: clamp(46px, 7.6vw, 116px); line-height: .92; letter-spacing: -0.055em; margin: 22px 0 28px; }
   .lead { font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; max-width: 33em; margin-bottom: 34px; }
   .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .store-badge { display: inline-flex; line-height: 0; }
+  .store-badge img { height: 48px; width: auto; }
   .note { font-size: 15px; color: var(--muted); margin-top: 18px; }
 
   /* The page-load moment: the headline rises once, then everything holds still until the visitor acts. */
@@ -261,10 +263,11 @@
   <div class="hero sheet">
     <div class="wrap">
       <div>
-        <span class="status"><i></i>In testing on Android · iPhone to follow</span>
+        <span class="status"><i></i>Out now on iPhone · In testing on Android</span>
         <h1>Find your next game through gameplay</h1>
         <p class="lead">Looking For Game is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
         <div class="ctas">
+          <a class="store-badge" href="https://apps.apple.com/app/id6835639075" rel="noopener"><img src="/assets/app-store-badge.svg" alt="Download on the App Store" width="144" height="48"></a>
           <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
           <a class="btn ghost" href="#how">See how it works</a>
         </div>
@@ -373,8 +376,11 @@
     <div class="wrap">
       <div class="panel">
         <h2>Be one of the first to try Looking For Game</h2>
-        <p>Looking For Game is in closed testing on Android. Leave the email address of your Google Play account and we'll add you to the test.</p>
-        <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
+        <p>On iPhone, it's on the App Store now. On Android, Looking For Game is in closed testing: leave the email address of your Google Play account and we'll add you to the test.</p>
+        <div class="ctas">
+          <a class="store-badge" href="https://apps.apple.com/app/id6835639075" rel="noopener"><img src="/assets/app-store-badge.svg" alt="Download on the App Store" width="144" height="48"></a>
+          <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
+        </div>
       </div>
     </div>
   </section>

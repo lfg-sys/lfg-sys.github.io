@@ -24,7 +24,7 @@
     <div class="box" id="group" hidden></div>
     <a class="btn" id="get" href="https://play.google.com/store/apps/details?id=uk.co.lfgame.app">Join the group</a>
     <small id="have">Already have the app? Open it, tap Discover at the top, choose Co-op, then <b>Join with a code</b> and enter <span class="code" id="code">your code</span></small>
-    <small>Free on Android. Looking For Game is in testing; iPhone comes later.</small>
+    <small>Free on iPhone and Android. On iPhone, install the app, then open this invite link again to join the group.</small>
   </div>
 </main>
 <script>
@@ -32,12 +32,15 @@
 // player lands in the group. The group's name and deck are read from the database with the public key.
 (function () {
   var c = (new URLSearchParams(location.search).get('c') || location.hash.slice(1) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+  // iPhone: the App Store. Once installed, opening this invite link again opens the app in the group (universal link).
+  var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (ios) document.getElementById('get').href = 'https://apps.apple.com/app/id6835639075';
   if (!c) return;
   document.getElementById('code').textContent = c;
   var play = 'https://play.google.com/store/apps/details?id=uk.co.lfgame.app&referrer=' + encodeURIComponent('coop=' + c + '&utm_source=coop_invite');
   // On Android, open the app straight into the group if it's installed; Android falls back to Play when it isn't.
   // Needed because in-app browsers (Messenger, Instagram) show this page instead of handing the link to the app.
-  document.getElementById('get').href = /Android/i.test(navigator.userAgent)
+  if (!ios) document.getElementById('get').href = /Android/i.test(navigator.userAgent)
     ? 'intent://lfgame.co.uk/join/?c=' + c + '#Intent;scheme=https;package=uk.co.lfgame.app;S.browser_fallback_url=' + encodeURIComponent(play) + ';end'
     : play;
   fetch('https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/coop_preview', {
