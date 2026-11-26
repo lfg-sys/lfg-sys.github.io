@@ -15,7 +15,7 @@
 <link rel="icon" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <script>
-// One link for every bio: lfgame.co.uk/get, or lfgame.co.uk/get?s=tiktok (instagram, x, discord) per platform.
+// One link for every bio: lfgame.co.uk/get, or lfgame.co.uk/get?s=tiktok (instagram, x, discord, reddit) per platform.
 // Counts the click with the same tracked links as /r/ (decision 134; links bio and bio-<platform>, no IP stored),
 // then sends iPhone and iPad to the App Store and Android to Google Play with the link's install referrer.
 // Computers stay on this page: both badges and a QR code. Add ?stay to check the page on a phone.
@@ -24,7 +24,7 @@
   var KEY = 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm';
   var APPLE = 'https://apps.apple.com/app/id6835639075';
   var PLAY = 'https://play.google.com/store/apps/details?id=uk.co.lfgame.app&referrer=utm_source%3Dbio%26utm_medium%3Dlink%26utm_campaign%3Dbio';
-  var KNOWN = ['tiktok', 'instagram', 'x', 'discord'];
+  var KNOWN = ['tiktok', 'instagram', 'x', 'discord', 'reddit'];
   var ua = navigator.userAgent || '';
   var p = new URLSearchParams(location.search);
   var s = (p.get('s') || '').toLowerCase();
