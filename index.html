@@ -253,7 +253,7 @@
       <a href="#features">Features</a>
       <a href="#developers">For developers</a>
       <button class="mute" type="button" id="mute" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6v4h2.5L8 13V3L4.5 6z" fill="currentColor"/><path d="M10.8 5.6a3.4 3.4 0 0 1 0 4.8M12.8 3.8a6 6 0 0 1 0 8.4"/></svg>Mute</button>
-      <a class="btn small" href="#join" data-join-jump>Join the test</a>
+      <a class="btn small" href="#join">Get the app</a>
     </nav>
   </div>
 </header>
@@ -263,12 +263,12 @@
   <div class="hero sheet">
     <div class="wrap">
       <div>
-        <span class="status"><i></i>Out now on iPhone · In testing on Android</span>
+        <span class="status"><i></i>Out now on iPhone and Android</span>
         <h1>Find your next game through gameplay</h1>
         <p class="lead">Looking For Game is a swipe deck of games. Each card plays real gameplay the moment it appears, with the platforms it's on and where it's cheapest. Skip what isn't for you, save what is.</p>
         <div class="ctas">
           <a class="store-badge" href="https://apps.apple.com/app/id6835639075" rel="noopener"><img src="/assets/app-store-badge.svg" alt="Download on the App Store" width="144" height="48"></a>
-          <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
+          <a class="store-badge" href="https://play.google.com/store/apps/details?id=uk.co.lfgame.app&amp;referrer=utm_source%3Dlfgame.co.uk" rel="noopener"><img src="/assets/google-play-badge.png" alt="Get it on Google Play" width="161" height="48"></a>
           <a class="btn ghost" href="#how">See how it works</a>
         </div>
         <p class="note">Free to use. No account needed.</p>
@@ -282,7 +282,7 @@
             <figure class="end">
               <h3>You seem to enjoy this.</h3>
               <p>We have thousands more in the app.</p>
-              <a class="btn" href="#join" data-join-jump>Join the Android test</a>
+              <a class="btn" href="#join">Get the app</a>
               <button class="again" type="button" data-again>Swipe again</button>
             </figure>
             <span class="hint" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>Swipe the card<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></span>
@@ -375,11 +375,11 @@
   <section class="join sheet" id="join">
     <div class="wrap">
       <div class="panel">
-        <h2>Be one of the first to try Looking For Game</h2>
-        <p>On iPhone, it's on the App Store now. On Android, Looking For Game is in closed testing: leave the email address of your Google Play account and we'll add you to the test.</p>
+        <h2>Get Looking For Game</h2>
+        <p>Free on iPhone and Android. No account needed to start swiping.</p>
         <div class="ctas">
           <a class="store-badge" href="https://apps.apple.com/app/id6835639075" rel="noopener"><img src="/assets/app-store-badge.svg" alt="Download on the App Store" width="144" height="48"></a>
-          <a class="btn" data-join href="mailto:lfg@lfgame.co.uk?subject=Looking%20For%20Game%20Android%20test">Join the Android test</a>
+          <a class="store-badge" href="https://play.google.com/store/apps/details?id=uk.co.lfgame.app&amp;referrer=utm_source%3Dlfgame.co.uk" rel="noopener"><img src="/assets/google-play-badge.png" alt="Get it on Google Play" width="161" height="48"></a>
         </div>
       </div>
     </div>
@@ -520,7 +520,7 @@
 
 // "Join the Android test": the button turns into an email box. The address goes to Looking For Game (lfg@lfgame.co.uk gets a
 // message) so we can add it to the closed test in Google Play. Without JavaScript the button is a plain email link.
-// At launch this becomes a straight link to Google Play.
+// Launched 26 Nov 2026: the page now links straight to the App Store and Google Play, so nothing uses this form.
 (function () {
   var API = 'https://vulgyfzelewuceatdloj.supabase.co/rest/v1/rpc/tester_signup';
   var KEY = 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm';
