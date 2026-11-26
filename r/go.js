@@ -9,7 +9,7 @@
   // App Store campaign tag (26 Nov 2026): once PT holds Rung App Ltd's provider number (App Store Connect → Analytics
   // → Sources → generate a campaign link; the pt= value), iPhone clicks carry the link's name as the campaign, so App
   // Analytics shows store visits and downloads per link. Empty = plain App Store link, as before.
-  var PT = '';
+  var PT = '129812972';
   var m = location.pathname.match(/\/r\/([a-z0-9-]+)\/?$/i);
   var slug = (m ? m[1] : (location.search.replace(/^\?/, '').split('&')[0] || '')).toLowerCase().slice(0, 48);
   var ua = navigator.userAgent || '';

@@ -33,7 +33,7 @@
   var android = /Android/i.test(ua);
   var device = android ? 'android' : ios ? 'ios' : 'desktop';
   var stay = p.has('stay') || !(ios || android);
-  var PT = '';   // App Store campaign tag: same provider number as /r/go.js (empty = plain App Store link)
+  var PT = '129812972';   // App Store campaign tag: same provider number as /r/go.js (empty = plain App Store link)
   if (PT) APPLE = 'https://apps.apple.com/app/apple-store/id6835639075?pt=' + PT + '&ct=' + slug + '&mt=8';
   window.LFG_LINKS = { ios: APPLE, play: PLAY };
   var gone = false;
