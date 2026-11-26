@@ -15,8 +15,9 @@
 <link rel="icon" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <script>
-// One link for every bio: lfgame.co.uk/get, or lfgame.co.uk/get?s=tiktok (instagram, x, discord, reddit) per platform.
-// Counts the click with the same tracked links as /r/ (decision 134; links bio and bio-<platform>, no IP stored),
+// One plain link for everywhere: lfgame.co.uk/get. The platform is worked out from the in-app browser or the
+// page the click came from (TikTok, Instagram, X, Reddit, Discord, Facebook); ?s=<platform> still works and wins.
+// Unknown sources count as plain "bio". Counted with the same tracked links as /r/ (decision 134; no IP stored),
 // then sends iPhone and iPad to the App Store and Android to Google Play with the link's install referrer.
 // Computers stay on this page: both badges and a QR code. Add ?stay to check the page on a phone.
 (function () {
@@ -24,11 +25,29 @@
   var KEY = 'sb_publishable_9TxQtrSnAyZKyibFMWpOqQ_fosdZqnm';
   var APPLE = 'https://apps.apple.com/app/id6835639075';
   var PLAY = 'https://play.google.com/store/apps/details?id=uk.co.lfgame.app&referrer=utm_source%3Dbio%26utm_medium%3Dlink%26utm_campaign%3Dbio';
-  var KNOWN = ['tiktok', 'instagram', 'x', 'discord', 'reddit'];
+  var KNOWN = ['tiktok', 'instagram', 'x', 'discord', 'reddit', 'facebook'];
   var ua = navigator.userAgent || '';
   var p = new URLSearchParams(location.search);
   var s = (p.get('s') || '').toLowerCase();
-  var slug = KNOWN.indexOf(s) >= 0 ? 'bio-' + s : 'bio';
+  if (KNOWN.indexOf(s) < 0) s = detect();
+  var slug = s ? 'bio-' + s : 'bio';
+  function detect() {
+    // In-app browsers name themselves in the user agent; otherwise use the page the click came from.
+    if (/Instagram/i.test(ua)) return 'instagram';
+    if (/musical_ly|Bytedance|TikTok|trill_/i.test(ua)) return 'tiktok';
+    if (/FBAN|FBAV|FB_IAB/i.test(ua)) return 'facebook';
+    if (/Reddit/i.test(ua)) return 'reddit';
+    if (/Discord/i.test(ua)) return 'discord';
+    if (/Twitter|TwitterAndroid/i.test(ua)) return 'x';
+    var h = ''; try { h = new URL(document.referrer).hostname.replace(/^www\./, ''); } catch (e) {}
+    if (/(^|\.)(t\.co|x\.com|twitter\.com)$/.test(h)) return 'x';
+    if (/(^|\.)instagram\.com$/.test(h)) return 'instagram';
+    if (/(^|\.)tiktok\.com$/.test(h)) return 'tiktok';
+    if (/(^|\.)(reddit\.com|redd\.it)$/.test(h)) return 'reddit';
+    if (/(^|\.)(discord\.com|discordapp\.com|discord\.gg)$/.test(h)) return 'discord';
+    if (/(^|\.)(facebook\.com|fb\.com|fb\.me)$/.test(h)) return 'facebook';
+    return '';
+  }
   var ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
   var android = /Android/i.test(ua);
   var device = android ? 'android' : ios ? 'ios' : 'desktop';
